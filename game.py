@@ -12,14 +12,15 @@ class Game:
         self.screen = pygame.display.set_mode(self.size, self.flag)
     
     def run(self):
-        chess_board = Board(self.screen)
+        chess_board = Board()
         while self.is_running:
             for event in pygame.event.get():
                 if event.type == QUIT:
                     self.is_running = False
             self.screen.fill(Color(225, 105,  255))
             
-            chess_board.draw_board()
+            chess_board.render_board(self.screen,width=width,height=height)
+            
             pygame.display.update()
         pygame.quit()
 
