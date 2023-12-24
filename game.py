@@ -1,6 +1,6 @@
 import pygame
 from pygame.locals import *
-from board.chess import *
+from board.board_template import *
 width, height = 1000,1000
 
 class Game:
