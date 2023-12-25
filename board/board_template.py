@@ -1,17 +1,15 @@
 import pygame
 from pygame.locals import *
+from classes_pieces.pieces import Pawn
+from .constants import CREMA,VERDE,ROWS,COLS,SIZE,WIDTH,HEIGHT
 
-
-WIDTH = 1000
 class Board:
     def __init__(self):
         
-        self.drawn_board = pygame.Surface((500,500))
-        self.ROWS,self.COLS = 8,8
-        self.SIZE = WIDTH/self.COLS
-        self.next_color = pygame.Color(18,95,74) #Verde
-        self.starter_color = pygame.Color(250, 233, 169) #Crema
-        self.surf_cord = {}
+        self.drawn_board = pygame.Surface((WIDTH,HEIGHT))#Plantilla en donde se dibujara el resto de cuadros
+        
+        self.surf_cord = {} #Diccionario que almacena las coordenadas de las superficie (Posiblemente innecesario, puede que lo elimine después)
+        self.virtual_board = [] #Representacion virtual del tablero
         self.draw_board()
         
     def dictionary_surfaces_coordinates(self, surface, coordinates, row, col):
@@ -22,48 +20,49 @@ class Board:
         return surf_cord
     
     def create_surface(self,color):
-        rectangle_surface = pygame.surface.Surface((self.SIZE,self.SIZE))
+        rectangle_surface = pygame.surface.Surface((SIZE,SIZE))
         rectangle_surface.fill(color=color)
         return rectangle_surface
-    
-    def draw_cell(self,x,y,color):
-        rectangle_surface = self.create_surface(color)
-        self.drawn_board.blit(rectangle_surface,Rect(x,y,self.SIZE,self.SIZE))
 
     def draw_board(self):
         
-        for i in range(0,self.ROWS):
-            dictionary = None
-            for j in range(0,self.COLS):
-                coord_x,coord_y = self.SIZE*j//2,self.SIZE*i//2
+        for row in range(0,ROWS):
+            self.virtual_board.append([])
+            for col in range(0,COLS):
+                coord_x,coord_y = SIZE*col//2,SIZE*row//2
             
-                if i%2==0:
-                    if j%2==0:
-                        self.draw_cell(coord_x,coord_y, self.starter_color)
-                        surface = self.create_surface(self.starter_color)
-                        dictionary = self.dictionary_surfaces_coordinates(surface,(coord_x,coord_y),i,j)
-                    else:
-                        self.draw_cell(coord_x,coord_y,self.next_color)
-                        surface = self.create_surface(self.next_color)
-                        dictionary = self.dictionary_surfaces_coordinates(surface,(coord_x,coord_y),i,j)
-                    
+                if row%2==0:
+                    if col%2==0:    
+                        surface = self.create_surface(CREMA)    
+                    else:   
+                        surface = self.create_surface(VERDE)    
                 else:
-                    if j%2==0:
-                        self.draw_cell(coord_x,coord_y, self.next_color)
-                        surface = self.create_surface(self.next_color)
-                        dictionary = self.dictionary_surfaces_coordinates(surface,(coord_x,coord_y),i,j)
-                        
+                    if col%2==0:
+                        surface = self.create_surface(VERDE)
+                  
                     else:
-                        self.draw_cell(coord_x,coord_y,self.starter_color)
-                        surface = self.create_surface(self.starter_color)
-                        dictionary = self.dictionary_surfaces_coordinates(surface,(coord_x,coord_y),i,j)
-                self.surf_cord.update(dictionary)
-                self.drawn_board.blit(self.surf_cord["surf_" + str(i) + str(j)],(self.surf_cord["coordinate_" + str(i) + str(j)][0],self.surf_cord["coordinate_" + str(i) + str(j)][1]))
+                        surface = self.create_surface(CREMA)
+
+                self.drawn_board.blit(surface,Rect(coord_x,coord_y,SIZE,SIZE))
+                        
+                
+                if row == 0:
+                    self.virtual_board[row].append(Pawn('black',self.drawn_board,row,col))
+                elif row == 3:
+                    self.virtual_board[row].append(Pawn('white',self.drawn_board,row,col))
+                else:
+                    self.virtual_board[row].append(0)
+                    
 
 
                         
     def render_board(self,screen,width,height):
-        screen.blit(self.drawn_board, (width/2 - 250,height/2 - 250))
+        screen.blit(self.drawn_board, (0,0))
+        for row in range(0,ROWS):
+            for col in range(0,COLS):
+                if isinstance(self.virtual_board[row][col], Pawn):
+                    self.virtual_board[row][col].set_image()
+        print(self.virtual_board)
 
 
 
