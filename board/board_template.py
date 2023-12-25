@@ -5,12 +5,9 @@ from .constants import CREMA,VERDE,ROWS,COLS,SIZE,WIDTH,HEIGHT
 
 class Board:
     def __init__(self):
-        
-        self.drawn_board = pygame.Surface((WIDTH,HEIGHT))#Plantilla en donde se dibujara el resto de cuadros
-        
+        #Plantilla en donde se dibujara el resto de cuadros
         self.surf_cord = {} #Diccionario que almacena las coordenadas de las superficie (Posiblemente innecesario, puede que lo elimine después)
         self.virtual_board = [] #Representacion virtual del tablero
-        self.draw_board()
         
     def dictionary_surfaces_coordinates(self, surface, coordinates, row, col):
         surf_cord = {
@@ -19,49 +16,20 @@ class Board:
         }
         return surf_cord
     
-    def create_surface(self,color):
-        rectangle_surface = pygame.surface.Surface((SIZE,SIZE))
-        rectangle_surface.fill(color=color)
-        return rectangle_surface
+    def draw_cell(self,surface,color,x,y):
+        pygame.draw.rect(surface,color,(x,y,SIZE,SIZE))
 
-    def draw_board(self):
+    def draw_board(self,screen):
         
         for row in range(0,ROWS):
             self.virtual_board.append([])
             for col in range(0,COLS):
-                coord_x,coord_y = SIZE*col//2,SIZE*row//2
-            
-                if row%2==0:
-                    if col%2==0:    
-                        surface = self.create_surface(CREMA)    
-                    else:   
-                        surface = self.create_surface(VERDE)    
-                else:
-                    if col%2==0:
-                        surface = self.create_surface(VERDE)
-                  
-                    else:
-                        surface = self.create_surface(CREMA)
-
-                self.drawn_board.blit(surface,Rect(coord_x,coord_y,SIZE,SIZE))
-                        
-                
-                if row == 0:
-                    self.virtual_board[row].append(Pawn('black',self.drawn_board,row,col))
-                elif row == 3:
-                    self.virtual_board[row].append(Pawn('white',self.drawn_board,row,col))
-                else:
-                    self.virtual_board[row].append(0)
+                coord_y,coord_x = SIZE*col,SIZE*row
+                   
                     
-
-
                         
-    def render_board(self,screen,width,height):
-        screen.blit(self.drawn_board, (0,0))
-        for row in range(0,ROWS):
-            for col in range(0,COLS):
-                if isinstance(self.virtual_board[row][col], Pawn):
-                    self.virtual_board[row][col].set_image()
+    def render_board(self,screen):
+        self.draw_board(screen=screen)
         print(self.virtual_board)
 
 
