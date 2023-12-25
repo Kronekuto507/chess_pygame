@@ -58,7 +58,7 @@ class Board:
                         surface = self.create_surface(self.starter_color)
                         dictionary = self.dictionary_surfaces_coordinates(surface,(coord_x,coord_y),i,j)
                 self.surf_cord.update(dictionary)
-                self.drawn_board.blit(self.surf_cord["surf_" + str(i) + str(j)],(self.surf_cord["coordinate_" + str(i) + str(j)][0],["coordinate_" + str(i) + str(j)][1]))
+                self.drawn_board.blit(self.surf_cord["surf_" + str(i) + str(j)],(self.surf_cord["coordinate_" + str(i) + str(j)][0],self.surf_cord["coordinate_" + str(i) + str(j)][1]))
 
 
                         
