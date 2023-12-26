@@ -10,11 +10,11 @@ class Piece:
         self.col = col
         self.pos_x = 0
         self.pos_y = 0
-        self.calc_pos()
+        
     
     def calc_pos(self):
-        self.pos_x = SIZE * self.col + SIZE //2
-        self.pos_y = SIZE * self.row + SIZE//2
+        self.pos_x = SIZE * self.col 
+        self.pos_y = SIZE * self.row   
 
 
 class Pawn(Piece):
@@ -24,13 +24,14 @@ class Pawn(Piece):
         
     
     def set_image(self):
-        
+        self.calc_pos()
         if self.color == "white":
             image = pygame.image.load(Path(r"C:\Users\aaron\Desktop\Programacion\Python\ajedrez\pieces_images\white_pawn.png")).convert_alpha()
+            
               
         elif self.color == "black":
             image = pygame.image.load(Path(r"C:\Users\aaron\Desktop\Programacion\Python\ajedrez\pieces_images\black_pawn.png")).convert_alpha()
-            
+        
         self.image.blit(image,(self.pos_x,self.pos_y))
     
 

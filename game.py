@@ -6,7 +6,6 @@ from board.constants import WIDTH,HEIGHT,CREMA
 class Game:
     def __init__(self):
         pygame.init()
-
         self.is_running = True
         self.size = (WIDTH, HEIGHT)
         self.screen = pygame.display.set_mode(self.size)
@@ -17,7 +16,6 @@ class Game:
             for event in pygame.event.get():
                 if event.type == QUIT:
                     self.is_running = False
-            
             self.screen.fill(CREMA)
             chess_board.render_board(self.screen)
             

@@ -22,12 +22,20 @@ class Board:
     def draw_board(self,screen):
         
         for row in range(0,ROWS):
-            self.virtual_board.append([])
-            for col in range(0,COLS):
+            for col in range(row%2,ROWS,2):
+
                 coord_y,coord_x = SIZE*col,SIZE*row
-                   
+                self.draw_cell(screen,VERDE,coord_x,coord_y)
+        
+        for row in range(ROWS):
+            for col in range(COLS):
+                    if row == 6:
+                        w_pawn = Pawn('white',screen,row,col)
+                        w_pawn.set_image()
+                    if row == 1:
+                        b_pawn = Pawn('black', screen,row,col)
+                        b_pawn.set_image()
                     
-                        
     def render_board(self,screen):
         self.draw_board(screen=screen)
         print(self.virtual_board)
