@@ -2,8 +2,8 @@ import pygame
 from pygame.locals import *
 
 
-WIDTH = 1000
-HEIGHT = 1000 
+WIDTH = 600
+HEIGHT = 600 
 class Board:
     def __init__(self, screen):
         
@@ -24,14 +24,14 @@ class Board:
 
                 if i%2==0:
                     if j%2==0:
-                        self.draw_cell(self.SIZE*j/2,self.SIZE*i/2, self.starter_color)
+                        self.draw_cell(self.SIZE*j,self.SIZE*i, self.starter_color)
                     else:
-                        self.draw_cell(self.SIZE*j/2,self.SIZE*i/2,self.next_color)
+                        self.draw_cell(self.SIZE*j,self.SIZE*i,self.next_color)
                 else:
                     if j%2==0:
-                        self.draw_cell(self.SIZE*j/2,self.SIZE*i/2, self.next_color)
+                        self.draw_cell(self.SIZE*j,self.SIZE*i, self.next_color)
                     else:
-                        self.draw_cell(self.SIZE*j/2,self.SIZE*i/2,self.starter_color)
+                        self.draw_cell(self.SIZE*j,self.SIZE*i,self.starter_color)
 
 
             
