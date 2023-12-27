@@ -21,7 +21,7 @@ class Pawn(Piece):
 
     def __init__(self, color, surface, row, col):
         super().__init__(color, surface, row, col)
-        
+        self.steps = 0
     
     def set_image(self):
         self.calc_pos()
