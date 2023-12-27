@@ -3,6 +3,7 @@ from pygame.locals import *
 from board.board_template import *
 from board.constants import WIDTH,HEIGHT,CREMA
 
+
 class Game:
     def __init__(self):
         pygame.init()
