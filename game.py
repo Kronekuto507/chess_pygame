@@ -21,6 +21,7 @@ class Game:
             chess_board.render_board(self.screen)
             
             pygame.display.update()
+            break
         pygame.quit()
 
 if __name__ == "__main__":
