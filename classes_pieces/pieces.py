@@ -54,6 +54,16 @@ class Knight(Piece):
         super().__init__(color, surface, row, col)
         self.name = 'knight'
 
+class King(Piece):
+    def __init__(self,color,surface,row,col):
+        super().__init__(color, surface, row, col)
+        self.name = 'king'
+
+class Bishop(Piece):
+    def __init__(self,color,surface,row,col):
+        super().__init__(color,surface,row,col)
+        self.name = 'bishop'
+
     
 
     
