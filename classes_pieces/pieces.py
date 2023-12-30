@@ -2,7 +2,7 @@ import pygame
 from pygame.locals import *
 from pathlib import Path
 from board.constants import SIZE
-from os import path
+
 class Piece:
     def __init__(self, color, surface,row,col):
         self.image= surface
@@ -31,6 +31,12 @@ class Piece:
             image = pygame.image.load(path).convert_alpha()
         
         self.image.blit(image,(self.pos_x,self.pos_y))
+    
+    def select_piece(self,mouse_x,mouse_y):
+        print(f"{mouse_x},{mouse_y}")
+        if (mouse_x >= SIZE -self.pos_x and mouse_x <= SIZE + self.pos_x) and (mouse_y >= SIZE-self.pos_y and mouse_y <= SIZE+self.pos_y):
+            pygame.draw.rect(self.image,(0,0,255),(mouse_x,mouse_y),SIZE,SIZE)
+
        
 
 
