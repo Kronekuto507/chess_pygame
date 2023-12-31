@@ -5,12 +5,12 @@ from .constants import VERDE,ROWS,COLS,SIZE
 
 
 class Board:
-    def __init__(self,screen):
+    def __init__(self):
         #Plantilla en donde se dibujara el resto de cuadros
         #Diccionario que almacena las coordenadas de las superficie (Posiblemente innecesario, puede que lo elimine después)
         self.virtual_board = [] #Representacion virtual del tablero
         self.selected_piece = None
-        self.create_virutal_board(screen)
+        
     
     def draw_cell(self,surface,color,x,y):
         pygame.draw.rect(surface,color,(x,y,SIZE,SIZE))
@@ -48,7 +48,7 @@ class Board:
 
         
               
-    def create_virutal_board(self,screen):
+    def create_virtual_board(self,screen):
         b_starter_row = 0
         b_array = [Rook('black',screen,b_starter_row,0),Knight('black',screen,b_starter_row,1)
                    ,Bishop('black',screen,b_starter_row,2),Queen('black',screen,b_starter_row,3),King('black',screen,b_starter_row,4)

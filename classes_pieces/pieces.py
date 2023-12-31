@@ -12,6 +12,8 @@ class Piece:
         self.pos_x = 0
         self.pos_y = 0
         self.name = ''
+        self.is_selected = False
+        
         
     
     def calc_pos(self):
@@ -33,9 +35,14 @@ class Piece:
         self.image.blit(image,(self.pos_x,self.pos_y))
     
     def select_piece(self,mouse_x,mouse_y):
-        print(f"{mouse_x},{mouse_y}")
-        if (mouse_x >= SIZE -self.pos_x and mouse_x <= SIZE + self.pos_x) and (mouse_y >= SIZE-self.pos_y and mouse_y <= SIZE+self.pos_y):
-            pygame.draw.rect(self.image,(0,0,255),(mouse_x,mouse_y),SIZE,SIZE)
+        calc_x,calc_y = mouse_x >= self.pos_x and mouse_x <= self.pos_x + SIZE, mouse_y >= self.pos_y and mouse_y <= self.pos_y + SIZE
+        if calc_x and calc_y:
+            self.is_selected = True
+            print(f'{calc_x,},{calc_y} ')
+            print(f"{self.name}")
+
+
+
 
        
 

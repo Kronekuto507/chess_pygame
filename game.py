@@ -3,7 +3,7 @@ from pygame.locals import *
 from board.board_template import *
 from board.constants import WIDTH,HEIGHT,CREMA,ROWS,COLS
 from classes_pieces.pieces import *
-import sys
+
 
 class Game:
     def __init__(self):
@@ -13,9 +13,11 @@ class Game:
         self.screen = pygame.display.set_mode(self.size)
     
     def run(self):
-        chess_board = Board(self.screen)
+        chess_board = Board()
+        chess_board.create_virtual_board(self.screen)
         while self.is_running:
-
+            self.screen.fill(CREMA)
+            chess_board.draw_board(self.screen)            
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.is_running = False
@@ -23,9 +25,12 @@ class Game:
                     print('ABAJO')
                     x,y = event.pos
                     print(x,y)
+                    print(chess_board.virtual_board)
 
-            self.screen.fill(CREMA)
-            chess_board.draw_board(self.screen)
+                    
+                
+                    
+
             pygame.display.update()
         pygame.quit()
 
