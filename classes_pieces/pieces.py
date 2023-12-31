@@ -21,9 +21,8 @@ class Piece:
         self.pos_y = SIZE * self.row
     
     def set_image(self):
-        self.calc_pos()
         file_name, suffix = f'{self.color}_{self.name}','.png'
-
+        self.calc_pos()
         path = Path(r'c:\Users\aaron\Desktop\Programacion\Python\ajedrez\pieces_images',file_name).with_suffix(suffix)
         if self.color == "white":
             image = pygame.image.load(path).convert_alpha()
@@ -35,16 +34,12 @@ class Piece:
         self.image.blit(image,(self.pos_x,self.pos_y))
     
     def select_piece(self,mouse_x,mouse_y):
+        self.calc_pos()
         calc_x,calc_y = mouse_x >= self.pos_x and mouse_x <= self.pos_x + SIZE, mouse_y >= self.pos_y and mouse_y <= self.pos_y + SIZE
         if calc_x and calc_y:
             self.is_selected = True
             print(f'{calc_x,},{calc_y} ')
             print(f"{self.name}")
-
-
-
-
-       
 
 
 class Pawn(Piece):
