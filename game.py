@@ -16,8 +16,7 @@ class Game:
         chess_board = Board()
         chess_board.create_virtual_board(self.screen)
         while self.is_running:
-            self.screen.fill(CREMA)
-            chess_board.draw_board(self.screen)            
+           
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.is_running = False
@@ -26,10 +25,12 @@ class Game:
                     x,y = event.pos
                     print(x,y)
                     print(chess_board.virtual_board)
-
-                    
-                
-                    
+                    for row in range(ROWS):
+                        for col in range(COLS):
+                            if isinstance(chess_board.virtual_board[row][col],Piece):
+                                chess_board.virtual_board[row][col].select_piece(x,y)
+            self.screen.fill(CREMA)
+            chess_board.draw_board(self.screen) 
 
             pygame.display.update()
         pygame.quit()
