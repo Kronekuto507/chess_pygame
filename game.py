@@ -23,8 +23,6 @@ class Game:
                 elif event.type == MOUSEBUTTONDOWN:
                     print('ABAJO')
                     x,y = event.pos
-                    print(x,y)
-                    print(chess_board.virtual_board)
                     for row in range(ROWS):
                         for col in range(COLS):
                             if isinstance(chess_board.virtual_board[row][col],Piece):
