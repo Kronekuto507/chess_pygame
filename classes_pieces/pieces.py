@@ -40,6 +40,15 @@ class Piece:
             self.is_selected = True
             print(f'{calc_x,},{calc_y} ')
             print(f"{self.name}")
+    
+    def deselect(self):
+        self.is_selected = False
+    
+    def get_row(self):
+        return self.row
+    
+    def get_column(self):
+        return self.col
 
 
 class Pawn(Piece):
