@@ -15,7 +15,6 @@ class Game:
     def run(self):
         chess_board = Board()
         chess_board.create_virtual_board(self.screen)
-        p_row,p_col = 0,0
         while self.is_running:
            
             for event in pygame.event.get():
@@ -29,12 +28,22 @@ class Game:
                     for row in range(ROWS):
                         for col in range(COLS):
                             if isinstance(chess_board.virtual_board[row][col],Piece):
-                                chess_board.virtual_board[row][col].select_piece(x,y)
+                                if chess_board.selected_piece is None: #Se detecta si no existe ya un objeto seleccionado, de ser el caso, seleccionar directamente
+                                    chess_board.virtual_board[row][col].select_piece(x,y)
+                                else: #Si ya hay un objeto, este 
+                                    selected_row = chess_board.selected_piece.get_row()
+                                    selected_col = chess_board.selected_piece.get_column()
+
+                                    chess_board.virtual_board[selected_row][selected_col].deselect()
+                                    chess_board.virtual_board[row][col].select_piece(x,y)
+
+
                     
                     #asigna la pieca seleccionada en el fragmento de arriba al tablero
                     for row in range(ROWS):
                         for col in range(COLS):
                             if isinstance(chess_board.virtual_board[row][col],Piece):
+                                print(chess_board.virtual_board[row][col].is_selected)
                                 if chess_board.virtual_board[row][col].is_selected:
                                     chess_board.selected_piece = chess_board.virtual_board[row][col]
                     print(chess_board.selected_piece)
