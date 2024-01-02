@@ -1,7 +1,7 @@
 import pygame
 from pygame.locals import *
 from pathlib import Path
-from board.constants import SIZE
+from board.constants import SIZE,DIM_GREY
 
 class Piece:
     def __init__(self, color, surface,row,col):
@@ -49,12 +49,31 @@ class Piece:
     
     def get_column(self):
         return self.col
+    
+    def move_piece(self,x,y):
+        pass
+
+    def show_squares(self):
+        pass
 
 
 class Pawn(Piece):
     def __init__(self, color, surface, row, col):
         super().__init__(color, surface, row, col)
         self.name = 'pawn'
+
+    def show_squares(self):
+        starter_steps = 3
+        #Se dibuja unos circulos en el tablero que representan los cuadros en los que la pieza se puede mover
+        if self.is_selected:
+            for column in range(1,starter_steps):
+                if self.color == 'black':
+                    pygame.draw.circle(surface=self.image,color=DIM_GREY,center=(self.pos_x + SIZE/2,self.pos_y*column + SIZE + SIZE/2),radius=25)
+                elif self.color == 'white':
+                    pygame.draw.circle(surface=self.image,color=DIM_GREY,center=(self.pos_x + SIZE/2,self.pos_y - SIZE * column + SIZE - SIZE/2),radius=25)
+
+        
+
 
 class Queen(Piece):
     def __init__(self, color, surface, row, col):
