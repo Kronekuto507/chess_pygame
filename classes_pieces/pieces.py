@@ -1,11 +1,12 @@
 import pygame
 from pygame.locals import *
 from pathlib import Path
-from board.constants import SIZE,DIM_GREY
+from board.constants import SIZE,DIM_GREY,ROWS,COLS
 
 class Piece:
     def __init__(self, color, surface,row,col):
-        self.image= surface
+        self.surface= surface
+        self.path = None
         self.color = color
         self.row = row
         self.col = col
@@ -25,13 +26,12 @@ class Piece:
         
         path = Path(r'c:\Users\aaron\Desktop\Programacion\Python\ajedrez\pieces_images',file_name).with_suffix(suffix)
         if self.color == "white":
-            image = pygame.image.load(path).convert_alpha()
-            
+            self.image = pygame.image.load(path).convert_alpha()
               
         elif self.color == "black":
-            image = pygame.image.load(path).convert_alpha()
+            self.image = pygame.image.load(path).convert_alpha()
         
-        self.image.blit(image,(self.pos_x,self.pos_y))
+        self.image.blit(self.surface,(self.pos_x,self.pos_y))
     
     def select_piece(self,mouse_x,mouse_y):
         
@@ -56,6 +56,19 @@ class Piece:
     def show_squares(self):
         pass
 
+    def get_new_coordinates(self,x,y):
+        this_row = 0
+        this_col = 0
+        for i in range (ROWS):
+            this_row = SIZE * j
+            for j in range(COLS):
+                this_col = SIZE * i
+                if (x >= this_row and x <= this_row + SIZE) and (y>= this_col and y<=this_col + SIZE):
+                    break
+        return this_row,this_col
+
+
+
 
 class Pawn(Piece):
     def __init__(self, color, surface, row, col):
@@ -68,9 +81,18 @@ class Pawn(Piece):
         if self.is_selected:
             for column in range(1,starter_steps):
                 if self.color == 'black':
-                    pygame.draw.circle(surface=self.image,color=DIM_GREY,center=(self.pos_x + SIZE/2,self.pos_y*column + SIZE + SIZE/2),radius=25)
+                    pygame.draw.circle(surface=self.surface,color=DIM_GREY,center=(self.pos_x + SIZE/2,self.pos_y*column + SIZE + SIZE/2),radius=25)
                 elif self.color == 'white':
-                    pygame.draw.circle(surface=self.image,color=DIM_GREY,center=(self.pos_x + SIZE/2,self.pos_y - SIZE * column + SIZE - SIZE/2),radius=25)
+                    pygame.draw.circle(surface=self.surface,color=DIM_GREY,center=(self.pos_x + SIZE/2,self.pos_y - SIZE * column + SIZE - SIZE/2),radius=25)
+    
+    def move_piece(self, x, y):
+        if self.is_selected:
+            new_row,new_col = self.get_new_coordinates(x,y)
+            self.pos_x = SIZE * new_col
+            self.pos_y = SIZE * new_row
+            self.image.blit(self.surface,(self.pos_x,self.pos_y))
+
+
 
         
 
