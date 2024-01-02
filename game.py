@@ -21,30 +21,31 @@ class Game:
                 if event.type == pygame.QUIT:
                     self.is_running = False
                 elif event.type == MOUSEBUTTONDOWN:
-                    print('ABAJO')
-                    x,y = event.pos
+                    if event.button == 1:
+                        print('ABAJO')
+                        x,y = event.pos
 
-                    #Fragmento de codigo que selecciona la pieza
-                    for row in chess_board.virtual_board:
-                        for piece in row:
-                            if isinstance(piece,Piece):
-                                if chess_board.selected_piece is None: #Se detecta si no existe ya un objeto seleccionado, de ser el caso, seleccionar directamente
-                                    piece.select_piece(x,y)
-                                else: #Si ya hay un objeto, este 
-                                    selected_row = piece.get_row()
-                                    selected_col = piece.get_column()
+                        #Fragmento de codigo que selecciona la pieza
+                        for row in chess_board.virtual_board:
+                            for piece in row:
+                                if isinstance(piece,Piece):
+                                    if chess_board.selected_piece is None: #Se detecta si no existe ya un objeto seleccionado, de ser el caso, seleccionar directamente
+                                        piece.select_piece(x,y)
+                                    else: #Si ya hay un objeto, este 
+                                        selected_row = piece.get_row()
+                                        selected_col = piece.get_column()
 
-                                    chess_board.virtual_board[selected_row][selected_col].deselect()
-                                    piece.select_piece(x,y)
+                                        chess_board.virtual_board[selected_row][selected_col].deselect()
+                                        piece.select_piece(x,y)
 
-                    #asigna la pieca seleccionada en el fragmento de arriba al tablero
-                    for row in chess_board.virtual_board:
-                        for piece in row:
-                            if isinstance(piece,Piece):
-                                print(piece.is_selected)
-                                if piece.is_selected:
-                                    chess_board.selected_piece = piece
-                    print(chess_board.selected_piece)
+                        #asigna la pieca seleccionada en el fragmento de arriba al tablero
+                        for row in chess_board.virtual_board:
+                            for piece in row:
+                                if isinstance(piece,Piece):
+                                    print(piece.is_selected)
+                                    if piece.is_selected:
+                                        chess_board.selected_piece = piece
+                        print(chess_board.selected_piece)
 
             #Dibujar tablero
             self.screen.fill(CREMA)
