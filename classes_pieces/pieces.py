@@ -6,7 +6,7 @@ from board.constants import SIZE,DIM_GREY,ROWS,COLS
 class Piece:
     def __init__(self, color, surface,row,col):
         self.surface= surface
-        self.path = None
+        self.image = None
         self.color = color
         self.row = row
         self.col = col
@@ -23,15 +23,15 @@ class Piece:
     
     def set_image(self):
         file_name, suffix = f'{self.color}_{self.name}','.png'
-        
         path = Path(r'c:\Users\aaron\Desktop\Programacion\Python\ajedrez\pieces_images',file_name).with_suffix(suffix)
         if self.color == "white":
             self.image = pygame.image.load(path).convert_alpha()
+            
               
         elif self.color == "black":
             self.image = pygame.image.load(path).convert_alpha()
         
-        self.image.blit(self.surface,(self.pos_x,self.pos_y))
+        self.surface.blit(self.image,(self.pos_x,self.pos_y))
     
     def select_piece(self,mouse_x,mouse_y):
         
