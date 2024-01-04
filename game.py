@@ -1,7 +1,7 @@
 import pygame
 from pygame.locals import *
 from board.board_template import *
-from board.constants import WIDTH,HEIGHT,CREMA,ROWS,COLS
+from board.constants import WIDTH,HEIGHT,CREMA
 from classes_pieces.pieces import *
 
 
@@ -13,10 +13,9 @@ class Game:
         self.screen = pygame.display.set_mode(self.size)
     #Aniluz
     def run(self):
-        chess_board = Board()
-        chess_board.create_virtual_board(self.screen)
-        while self.is_running:
-          
+        chess_board = Board(self.screen)
+        chess_board.create_virtual_board()
+        while self.is_running:         
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.is_running = False
@@ -46,11 +45,19 @@ class Game:
                                     if piece.is_selected:
                                         chess_board.selected_piece = piece
                         print(chess_board.selected_piece)
+                    elif event.button == 3:
+                        x,y = event.pos
+
+                        for row in chess_board.virtual_board:
+                            for piece in row:
+                                if isinstance(piece,Piece):
+                                    if piece.is_selected:
+                                        piece.move_piece(x,y)
+
 
             #Dibujar tablero
             self.screen.fill(CREMA)
-            chess_board.draw_board(self.screen)
-
+            chess_board.draw_board()
             #Si hay una pieza seleccionada, entonces esta muestra las celdas a las que puede ir  
             for row in chess_board.virtual_board:
                 for piece in row:
