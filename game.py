@@ -47,12 +47,12 @@ class Game:
                         print(chess_board.selected_piece)
                     elif event.button == 3:
                         x,y = event.pos
-
                         for row in chess_board.virtual_board:
                             for piece in row:
                                 if isinstance(piece,Piece):
                                     if piece.is_selected:
                                         piece.move_piece(x,y)
+                                        
 
 
             #Dibujar tablero
@@ -63,6 +63,7 @@ class Game:
                 for piece in row:
                     if isinstance(piece,Piece):
                         piece.show_squares()
+            
             pygame.display.update()
         pygame.quit()
 
