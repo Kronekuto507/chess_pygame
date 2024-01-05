@@ -14,7 +14,6 @@ class Piece:
         self.pos_y = 0
         self.name = ''
         self.is_selected = False
-        self.is_moved = False
         self.calc_pos()
         
     
@@ -66,8 +65,7 @@ class Piece:
             for j in range(COLS):
                 this_row = SIZE * j
                 if (x >= this_row and x <= this_row + SIZE) and (y>= this_col and y<=this_col + SIZE):
-                    break
-        return this_row,this_col
+                    return i,j
 
 
 
@@ -91,12 +89,7 @@ class Pawn(Piece):
         if self.is_selected:
             new_row,new_col = self.get_new_coordinates(x,y)
             self.pos_x = SIZE * new_col
-            self.pos_y = SIZE * new_row
-            self.is_moved = True           
-
-
-        
-
+            self.pos_y = SIZE * new_row          
 
 class Queen(Piece):
     def __init__(self, color, surface, row, col):
@@ -107,6 +100,9 @@ class Rook(Piece):
     def __init__(self, color, surface, row, col):
         super().__init__(color, surface, row, col)
         self.name = 'rook'
+    
+    def show_squares(self):
+        return super().show_squares()
 
 class Knight(Piece):
     def __init__(self, color, surface, row, col):
@@ -122,6 +118,10 @@ class Bishop(Piece):
     def __init__(self,color,surface,row,col):
         super().__init__(color,surface,row,col)
         self.name = 'bishop'
+
+    def show_squares(self):
+        pass
+        
 
     
 
