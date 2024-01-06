@@ -47,7 +47,6 @@ class Game:
                         print(chess_board.selected_piece)
                     elif event.button == 3:
                         x,y = event.pos
-                        col,n_row = chess_board.selected_piece.get_new_coordinates(x,y)
                         for row in chess_board.virtual_board:
                             for piece in row:
                                 if isinstance(piece,Piece):
