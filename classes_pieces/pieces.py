@@ -51,8 +51,12 @@ class Piece:
     def get_column(self):
         return self.col
     
-    def move_piece(self,x,y):
-        pass
+    def move_piece(self, x, y):
+        piece_move_sound = pygame.mixer.Sound(r"C:\Users\aaron\Desktop\Programacion\Python\ajedrez\sounds\move-self.mp3")
+        if self.is_selected:
+            self.row,self.col = self.get_new_coordinates(x,y)
+            self.calc_pos()
+            piece_move_sound.play()
 
     def show_squares(self):
         pass
@@ -83,13 +87,7 @@ class Pawn(Piece):
                 if self.color == 'black':
                     pygame.draw.circle(surface=self.surface,color=DIM_GREY,center=(self.pos_x + SIZE/2,self.pos_y*column + SIZE + SIZE/2),radius=25)
                 elif self.color == 'white':
-                    pygame.draw.circle(surface=self.surface,color=DIM_GREY,center=(self.pos_x + SIZE/2,self.pos_y - SIZE * column + SIZE - SIZE/2),radius=25)
-    
-    def move_piece(self, x, y):
-        if self.is_selected:
-            new_row,new_col = self.get_new_coordinates(x,y)
-            self.pos_x = SIZE * new_col
-            self.pos_y = SIZE * new_row          
+                    pygame.draw.circle(surface=self.surface,color=DIM_GREY,center=(self.pos_x + SIZE/2,self.pos_y - SIZE * column + SIZE - SIZE/2),radius=25)         
 
 class Queen(Piece):
     def __init__(self, color, surface, row, col):
@@ -102,7 +100,13 @@ class Rook(Piece):
         self.name = 'rook'
     
     def show_squares(self):
-        return super().show_squares()
+        if self.is_selected:
+            for i in range(ROWS):
+                if self.color == 'black':
+                    pygame.draw.circle(self.surface,DIM_GREY,(self.pos_x*i + SIZE/2,self.pos_y + SIZE*i - SIZE + SIZE/2),25)
+                elif self.color == "white":
+                    pygame.draw.circle(self.surface,DIM_GREY,(self.pos_x + SIZE/2,self.pos_y - SIZE*i + SIZE - SIZE/2),25)
+                
 
 class Knight(Piece):
     def __init__(self, color, surface, row, col):
