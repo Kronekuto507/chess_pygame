@@ -51,12 +51,15 @@ class Piece:
     def get_column(self):
         return self.col
     
-    def move_piece(self, x, y):
+    def get_position(self):
+        return (self.get_row(),self.get_column())
+    
+    '''def move_piece(self, x, y):
         piece_move_sound = pygame.mixer.Sound(r"C:\Users\aaron\Desktop\Programacion\Python\ajedrez\sounds\move-self.mp3")
         if self.is_selected:
             self.row,self.col = self.get_new_coordinates(x,y)
             self.calc_pos()
-            piece_move_sound.play()
+            piece_move_sound.play()'''
 
     def show_squares(self):
         pass
@@ -70,6 +73,27 @@ class Piece:
                 this_row = SIZE * j
                 if (x >= this_row and x <= this_row + SIZE) and (y>= this_col and y<=this_col + SIZE):
                     return i,j
+                
+    def selection_status(self):
+        return self.is_selected
+    
+    def generate_moves(self,board):
+        
+        moves = []
+
+        for row in ROWS:
+            for col in COLS:
+                if self.selection_status():
+                    if isinstance(int,board.virtual_board[row][col]):
+                        moves.append((row,col))
+                    else:
+                        if board.is_ally_piece(self,board.virtual_board[row][col]):
+                            break
+                        else:
+                            moves.append((row+1,col+1))
+                            break
+        return moves
+
 
 
 
@@ -98,6 +122,7 @@ class Rook(Piece):
     def __init__(self, color, surface, row, col):
         super().__init__(color, surface, row, col)
         self.name = 'rook'
+        self.is_moved  = False
     
     def show_squares(self):
         if self.is_selected:
@@ -117,6 +142,7 @@ class King(Piece):
     def __init__(self,color,surface,row,col):
         super().__init__(color, surface, row, col)
         self.name = 'king'
+        self.is_moved = False
 
 class Bishop(Piece):
     def __init__(self,color,surface,row,col):
