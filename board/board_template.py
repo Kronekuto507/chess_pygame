@@ -61,6 +61,42 @@ class Board:
             for col in range(COLS):
                 if self.virtual_board[row] is not Piece and (row != 0 and row != 7 and row != 1 and row != 6): #Para dejar el polimorfismo alli
                     self.virtual_board[row].append(0)
+    
+    def is_in_check(self):
+        pass
+
+    def is_checkmate(self):
+        pass
+
+    def move_piece(self,piece):
+        pass
+
+    def get_possible_moves(self, piece_arg):
+        
+        moves = []
+
+        for row in self.virtual_board:
+            for col in self.virtual_board:
+                if piece_arg.selection_status():
+                    if isinstance(int,self.virtual_board[row][col]):
+                        moves.append((row,col))
+                    else:
+                        if self.is_ally_piece(piece_arg,self.virtual_board[row][col]):
+                            break
+                        else:
+                            moves.append((row+1,col+1))
+                            break
+        return moves
+
+        
+        
+    def is_ally_piece(self,main_piece,other_piece):
+        return True if main_piece.color == other_piece.color else False
+
+
+
+
+
 
 
 
