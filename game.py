@@ -21,6 +21,7 @@ class Game:
                 if event.type == pygame.QUIT:
                     self.is_running = False
                 elif event.type == MOUSEBUTTONDOWN:
+
                     if event.button == 1:
                         print('ABAJO')
                         x,y = event.pos
@@ -45,6 +46,7 @@ class Game:
                                     if piece.is_selected:
                                         chess_board.selected_piece = piece
                         print(chess_board.selected_piece)
+
                     elif event.button == 3:
                         x,y = event.pos
                         for row in chess_board.virtual_board:
@@ -64,10 +66,7 @@ class Game:
                     for row in chess_board.virtual_board:
                         print(row)
                         
-                                        
-
-
-            #Dibujar tablero
+                                            
             self.screen.fill(CREMA)
             chess_board.draw_board()
             #Si hay una pieza seleccionada, entonces esta muestra las celdas a las que puede ir  
