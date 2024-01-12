@@ -14,6 +14,7 @@ class Piece:
         self.pos_y = 0
         self.name = ''
         self.is_selected = False
+        self.moves = []
         self.calc_pos()
         
     
@@ -84,7 +85,7 @@ class Piece:
         for row in ROWS:
             for col in COLS:
                 if self.selection_status():
-                    if isinstance(int,board.virtual_board[row][col]):
+                    if isinstance(board.virtual_board[row][col],int):
                         moves.append((row,col))
                     else:
                         if board.is_ally_piece(self,board.virtual_board[row][col]):
@@ -123,15 +124,39 @@ class Rook(Piece):
         super().__init__(color, surface, row, col)
         self.name = 'rook'
         self.is_moved  = False
+
+    def generate_moves(self,board):
+
+        offsett = (COLS * -1) + self.col
+        later_offsett = (COLS * -1)
+
+        east = []
+
+        for col in (self.col, COLS + 1):
+            if isinstance(board[self.row][col],int):
+                east.append((self.row,col))
+            else:
+                break
+
+        west = []
+
+        for col in (offsett, later_offsett + 1):
+            if isinstance(board[self.row][col], int):
+                west.append((self.row, COLS + col))
+        
+        vertical = []
+
+        for col in COLS:
+            for row in ROWS:
+                if col == self.col:
+                    if isinstance(board[row][col],int):
+                        vertical.append(row,col)
+        moves = east + west + vertical
+        
+        return moves
     
-    def show_squares(self):
-        if self.is_selected:
-            for i in range(ROWS):
-                if self.color == 'black':
-                    pygame.draw.circle(self.surface,DIM_GREY,(self.pos_x*i + SIZE/2,self.pos_y + SIZE*i - SIZE + SIZE/2),25)
-                elif self.color == "white":
-                    pygame.draw.circle(self.surface,DIM_GREY,(self.pos_x + SIZE/2,self.pos_y - SIZE*i + SIZE - SIZE/2),25)
-                
+        
+
 
 class Knight(Piece):
     def __init__(self, color, surface, row, col):
