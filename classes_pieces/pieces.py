@@ -2,7 +2,7 @@ import pygame
 from pygame.locals import *
 from pathlib import Path
 from board.constants import SIZE,DIM_GREY,ROWS,COLS
-
+import math
 class Piece:
     def __init__(self, color, surface,row,col):
         self.surface= surface
@@ -132,7 +132,7 @@ class Rook(Piece):
 
         east = []
 
-        for col in (self.col, COLS + 1):
+        for col in range(self.col, COLS + 1):
             if isinstance(board[self.row][col],int):
                 east.append((self.row,col))
             else:
@@ -140,19 +140,20 @@ class Rook(Piece):
 
         west = []
 
-        for col in (offsett, later_offsett + 1):
+        for col in range(offsett, later_offsett + 1):
             if isinstance(board[self.row][col], int):
                 west.append((self.row, COLS + col))
         
         vertical = []
 
-        for col in COLS:
-            for row in ROWS:
+        for col in range(COLS):
+            for row in range(ROWS):
                 if col == self.col:
                     if isinstance(board[row][col],int):
                         vertical.append(row,col)
+                        
         moves = east + west + vertical
-        
+
         return moves
     
         
@@ -173,6 +174,40 @@ class Bishop(Piece):
     def __init__(self,color,surface,row,col):
         super().__init__(color,surface,row,col)
         self.name = 'bishop'
+
+    def generate_moves(self, board):
+
+        row_reference = self.row
+        col_reference = self.col
+
+        south_east = []
+        #Code for adding the southeast possible moves for the piece
+        for row in range(self.row,ROWS):
+            for col in range(self.col,COLS):
+                diff_row = row_reference - row
+                diff_col = col_reference - col
+                if isinstance(board[row][col], int):
+                    if abs(diff_col) == abs(diff_row):
+                        south_east.append(row,col)
+                        #Updates the 
+                        row_reference = row
+                        col_reference = col
+
+        north_east = []
+        for row in range(self.row - 1,-1,-1):
+            previous_row = self.row
+            previous_col = self.col
+            for col in range(self.col,COLS):
+                diff_row = previous_row - row
+                diff_col= previous_col - col
+                if isinstance(board[row][col],int):
+                    if abs(diff_col) == abs(diff_row)
+                    north_east.append((row,col))
+                    previous_row = row
+                    previous_col = col
+                    
+
+
 
     def show_squares(self):
         pass
