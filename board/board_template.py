@@ -72,21 +72,7 @@ class Board:
         pass
 
     def get_possible_moves(self, piece_arg):
-        
-        moves = []
-
-        for row in self.virtual_board:
-            for col in self.virtual_board:
-                if piece_arg.selection_status():
-                    if isinstance(int,self.virtual_board[row][col]):
-                        moves.append((row,col))
-                    else:
-                        if self.is_ally_piece(piece_arg,self.virtual_board[row][col]):
-                            break
-                        else:
-                            moves.append((row+1,col+1))
-                            break
-        return moves
+        pass
 
         
         
