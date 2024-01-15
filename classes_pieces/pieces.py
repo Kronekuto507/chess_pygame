@@ -78,7 +78,7 @@ class Piece:
     def selection_status(self):
         return self.is_selected
     
-    def generate_moves(self,board):
+    '''def generate_moves(self,board):
         
         moves = []
 
@@ -93,7 +93,7 @@ class Piece:
                         else:
                             moves.append((row+1,col+1))
                             break
-        return moves
+        return moves'''
 
 
 
@@ -104,150 +104,15 @@ class Pawn(Piece):
         super().__init__(color, surface, row, col)
         self.name = 'pawn'
 
-    def show_squares(self):
-        starter_steps = 3
-        #Se dibuja unos circulos en el tablero que representan los cuadros en los que la pieza se puede mover
-        if self.is_selected:
-            for column in range(1,starter_steps):
-                if self.color == 'black':
-                    pygame.draw.circle(surface=self.surface,color=DIM_GREY,center=(self.pos_x + SIZE/2,self.pos_y*column + SIZE + SIZE/2),radius=25)
-                elif self.color == 'white':
-                    pygame.draw.circle(surface=self.surface,color=DIM_GREY,center=(self.pos_x + SIZE/2,self.pos_y - SIZE * column + SIZE - SIZE/2),radius=25)         
-
-class Queen(Piece):
-    def __init__(self, color, surface, row, col):
-        super().__init__(color, surface, row, col)
-        self.name = 'queen'
-
-class Rook(Piece):
-    def __init__(self, color, surface, row, col):
-        super().__init__(color, surface, row, col)
-        self.name = 'rook'
-        self.is_moved  = False
-
-    def generate_moves(self,board):
-
-        offsett = (COLS * -1) + self.col
-        later_offsett = (COLS * -1)
-
-        east = []
-
-        for col in range(self.col, COLS + 1):
-            if isinstance(board[self.row][col],int):
-                east.append((self.row,col))
-            else:
-                break
-
-        west = []
-
-        for col in range(offsett, later_offsett + 1):
-            if isinstance(board[self.row][col], int):
-                west.append((self.row, COLS + col))
-        
-        vertical = []
-
-        for col in range(COLS):
-            for row in range(ROWS):
-                if col == self.col:
-                    if isinstance(board[row][col],int):
-                        vertical.append((row,col))
-                        
-        moves = east + west + vertical
-
-        return moves
-    
-        
-
 
 class Knight(Piece):
     def __init__(self, color, surface, row, col):
         super().__init__(color, surface, row, col)
         self.name = 'knight'
 
-class King(Piece):
-    def __init__(self,color,surface,row,col):
-        super().__init__(color, surface, row, col)
-        self.name = 'king'
-        self.is_moved = False
-
-class Bishop(Piece):
-    def __init__(self,color,surface,row,col):
-        super().__init__(color,surface,row,col)
-        self.name = 'bishop'
-
-    def generate_moves(self, board):
-        
-        south_east = []
-        previous_row = self.row
-        previous_col = self.col
-        #Code for adding the southeast possible moves for the piece
-        south_east_counter = 0
-        for row in range(self.row,ROWS):
-            for col in range(self.col,COLS):
-                if row != self.row:
-                    diff_row = previous_row - row
-                    diff_col = previous_col - col
-                    if isinstance(board[row][col], int):
-                        if abs(diff_col) == abs(diff_row):
-                            south_east.append((row,col))
-                            previous_row = south_east[south_east_counter][0]
-                            previous_col = south_east_counter[south_east_counter][1]
-                            south_east_counter += 1
-                            #Updates the 
+                
 
 
-        north_east = []
-        #Code for adding the north eastern possible moves for the bishop
-        previous_row = self.row
-        previous_col = self.col
-        north_east_counter = 0
-        for row in range(self.row,-1,-1):
-            for col in range(self.col,COLS):
-                if row != self.row:
-                    diff_row = previous_row - row
-                    diff_col = previous_col - col
-                    if isinstance(board[row][col], int):
-                        if abs(diff_col) == abs(diff_row):
-                            north_east.append((row,col))
-                            previous_row = north_east[north_east_counter][0]
-                            previous_col = north_east_counter[north_east_counter][1]
-                            north_east_counter += 1
-        
-        north_west = []
-        #Code for adding the north western possible moves for the bishop
-        previous_row = self.row
-        previous_col = self.col
-        north_west_counter = 0
-        for row in range(self.row, -1,-1):
-            for col in range(self.col,-1,-1):
-                if row != self.row:
-                    diff_row = previous_row - row
-                    diff_col = previous_col - col
-                    if isinstance(board[row][col],int):
-                        if abs(diff_col) == abs(diff_row):
-                            north_west.append((row,col))
-                            previous_row = north_west[north_west_counter][0]
-                            previous_col = north_west[north_west_counter][1]
-                            north_west_counter += 1
-        
-        south_west = []
-        previous_row = self.row
-        previous_col = self.col
-        south_west_counter = 0
-        for row in range(self.row,ROWS):
-            for col in range(self.col,-1,-1):
-                if row != self.row:
-                    diff_row = previous_row - row
-                    diff_col = previous_col - col
-                    if isinstance(board[row][col],int):
-                        if abs(diff_col) == abs(diff_row):
-                            south_west.append((row,col))
-                            previous_row = south_west[south_west_counter][0]
-                            previous_col = south_west[south_west_counter][1]
-                            south_east_counter += 1
-
-    def show_squares(self):
-        pass
         
 
     
