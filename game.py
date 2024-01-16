@@ -15,6 +15,7 @@ class Game:
     def run(self):
         chess_board = Board(self.screen)
         chess_board.create_virtual_board()
+        chess_board.generate_moves()
         while self.is_running:         
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -29,6 +30,7 @@ class Game:
                     elif event.button == 3:
                         x,y = event.pos
                         chess_board.move_piece_on_board(x,y)
+                        chess_board.generate_moves()
 
             self.screen.fill(CREMA)
             chess_board.draw_board()
