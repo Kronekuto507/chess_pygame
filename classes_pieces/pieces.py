@@ -70,7 +70,7 @@ class Piece:
 
     def show_squares(self):
             for move in self.moves:
-                coord_x,coord_y = SIZE*move[0],SIZE*move[1]
+                coord_x,coord_y = SIZE*move[1],SIZE*move[0]
                 pygame.draw.rect(self.surface,(0,0,0),(coord_x,coord_y,SIZE,SIZE))
         
 
@@ -89,4 +89,5 @@ class Piece:
     
     def assign_moves(self,moves):
         self.moves = moves
+
 
