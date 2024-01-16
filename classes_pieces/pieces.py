@@ -52,18 +52,27 @@ class Piece:
     def get_column(self):
         return self.col
     
-    def get_position(self):
+    def get_starting_square_coordinates(self):
         return (self.get_row(),self.get_column())
     
-    '''def move_piece(self, x, y):
+    def move_piece(self, x, y):
         piece_move_sound = pygame.mixer.Sound(r"C:\Users\aaron\Desktop\Programacion\Python\ajedrez\sounds\move-self.mp3")
         if self.is_selected:
-            self.row,self.col = self.get_new_coordinates(x,y)
-            self.calc_pos()
-            piece_move_sound.play()'''
+            new_x,new_y = self.get_new_coordinates(x,y)
+            for move in self.moves:
+                if new_x == move[0] and new_y == move[1]:
+                    self.row = new_x
+                    self.col = new_y
+                    self.calc_pos()
+                    piece_move_sound.play()
+                    break
+
 
     def show_squares(self):
-        pass
+            for move in self.moves:
+                coord_x,coord_y = SIZE*move[0],SIZE*move[1]
+                pygame.draw.rect(self.surface,(0,0,0),(coord_x,coord_y,SIZE,SIZE))
+        
 
     def get_new_coordinates(self,x,y):
         this_row = 0
@@ -78,19 +87,6 @@ class Piece:
     def selection_status(self):
         return self.is_selected
     
-    '''def generate_moves(self,board):
-        
-        moves = []
+    def assign_moves(self,moves):
+        self.moves = moves
 
-        for row in ROWS:
-            for col in COLS:
-                if self.selection_status():
-                    if isinstance(board.virtual_board[row][col],int):
-                        moves.append((row,col))
-                    else:
-                        if board.is_ally_piece(self,board.virtual_board[row][col]):
-                            break
-                        else:
-                            moves.append((row+1,col+1))
-                            break
-        return moves'''

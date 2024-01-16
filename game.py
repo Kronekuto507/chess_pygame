@@ -15,7 +15,6 @@ class Game:
     def run(self):
         chess_board = Board(self.screen)
         chess_board.create_virtual_board()
-        piece_capture_sound = pygame.mixer.Sound(r"C:\Users\aaron\Desktop\Programacion\Python\ajedrez\sounds\capture.mp3")
         while self.is_running:         
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -25,45 +24,20 @@ class Game:
                     if event.button == 1:
                         print('ABAJO')
                         x,y = event.pos
-
-                        #Fragmento de codigo que selecciona la pieza
-
-                        #asigna la pieca seleccionada en el fragmento de arriba al tablero
-                        for row in chess_board.virtual_board:
-                            for piece in row:
-                                if isinstance(piece,Piece):
-                                    print(piece.is_selected)
-                                    if piece.is_selected:
-                                        chess_board.selected_piece = piece
-                        print(chess_board.selected_piece)
+                        chess_board.select_piece_on_board(x,y)
 
                     elif event.button == 3:
                         x,y = event.pos
-                        for row in chess_board.virtual_board:
-                            for piece in row:
-                                if isinstance(piece,Piece):
-                                    if piece.is_selected:
-                                        old_column = piece.get_column()
-                                        old_row = piece.get_row()
-                                        piece.move_piece(x,y)
-                                        piece.deselect()
-                                        chess_board.virtual_board[old_row][old_column] = 0
-                                        new_column = piece.get_column()
-                                        new_row = piece.get_row()
-                                        if not isinstance(chess_board.virtual_board[new_row][new_column], int):
-                                            piece_capture_sound.play()
-                                        chess_board.virtual_board[new_row][new_column] = piece
-                    for row in chess_board.virtual_board:
-                        print(row)
-                        
-                                            
+                        chess_board.move_piece_on_board(x,y)
+
             self.screen.fill(CREMA)
             chess_board.draw_board()
             #Si hay una pieza seleccionada, entonces esta muestra las celdas a las que puede ir  
-            '''for row in chess_board.virtual_board:
+            for row in chess_board.virtual_board:
                 for piece in row:
                     if isinstance(piece,Piece):
-                        piece.show_squares()'''
+                        if piece.is_selected:
+                            piece.show_squares()
             
             pygame.display.update()
         pygame.quit()

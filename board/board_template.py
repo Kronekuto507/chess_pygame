@@ -27,7 +27,8 @@ class Board:
                    ,Bishop('white',screen,w_starter_row,2),Queen('white',screen,w_starter_row,3),King('white',screen,w_starter_row,4)
                     ,Bishop('white',screen,w_starter_row,5),Knight('white',screen,w_starter_row,6),Rook('white',screen,w_starter_row,7)]'''
         self.b_array = [Rook('black',screen,b_starter_row,0),0,0,0,0,0,0,Rook('black',screen,b_starter_row,7)]
-        self.w_array = [Rook('white',screen,w_starter_row,0),0,0,0,0,0,0,Rook('white',screen,w_starter_row,7)]        
+        self.w_array = [Rook('white',screen,w_starter_row,0),0,0,0,0,0,0,Rook('white',screen,w_starter_row,7)] 
+        self.previous_selected = None       
     
     def draw_cell(self,surface,color,x,y):
         pygame.draw.rect(surface,color,(x,y,SIZE,SIZE))
@@ -49,7 +50,7 @@ class Board:
         
         for row in range(ROWS):
             self.virtual_board.append([])
-            for col in range(COLS):
+            '''for col in range(COLS):
                     if row == 6:
                         w_pawn = Pawn('white',self.screen,row,col)
                         self.virtual_board[row].append(w_pawn)
@@ -57,18 +58,26 @@ class Board:
                     elif row == 1:
                         b_pawn = Pawn('black', self.screen,row,col)
                         self.virtual_board[row].append(b_pawn)
-                        self.virtual_board[row][col].create_image()
+                        self.virtual_board[row][col].create_image()'''
         
         for col in range (COLS):
             self.virtual_board[0].append(self.b_array[col])
             self.virtual_board[7].append(self.w_array[col])
-            self.virtual_board[0][col].create_image()
-            self.virtual_board[7][col].create_image()
+            if isinstance(self.virtual_board[0][col],Piece):
+                self.virtual_board[0][col].create_image()
+            if isinstance(self.virtual_board[7][col],Piece):
+                self.virtual_board[7][col].create_image()
         
         for row in range(ROWS):
             for col in range(COLS):
                 if self.virtual_board[row] is not Piece and (row != 0 and row != 7 and row != 1 and row != 6): #Para dejar el polimorfismo alli
                     self.virtual_board[row].append(0)
+        
+        for row in self.virtual_board:
+            for element in row:
+                if element is (Rook,Knight,Bishop,Queen,King,Pawn) and hasattr(element,"generate_moves"):
+                    moves = element.generate_moves(self.virtual_board)
+                    element.assign_moves(moves)
     
     def is_in_check(self):
         pass
@@ -76,14 +85,12 @@ class Board:
     def is_checkmate(self):
         pass
 
-    def move_piece(self,piece):
-        pass
 
-    def get_possible_moves(self, piece_arg):
-        pass
+    def generate_pieces_moves(self, piece_arg):
+        if piece_arg is (Rook,Knight,Bishop,Queen,King,Pawn) and hasattr(piece_arg,"generate_moves"):
+            return piece_arg.generate_moves(self.virtual_board)
 
-        
-        
+ 
     def is_ally_piece(self,main_piece,other_piece):
         return True if main_piece.color == other_piece.color else False
     
@@ -98,6 +105,25 @@ class Board:
                         selected_col = piece.get_column()
                         self.virtual_board[selected_row][selected_col].deselect()
                         piece.select_piece(x,y)
+
+    def move_piece_on_board(self,x,y):
+        piece_capture_sound = pygame.mixer.Sound(r"C:\Users\aaron\Desktop\Programacion\Python\ajedrez\sounds\capture.mp3")
+        for row in self.virtual_board:
+            for piece in row:
+                if isinstance(piece,Piece):
+                    if piece.is_selected:
+                        old_column = piece.get_column()
+                        old_row = piece.get_row()
+                        piece.move_piece(x,y)
+                        self.previous_selected = piece
+                        piece.deselect()
+                        self.virtual_board[old_row][old_column] = 0
+                        new_column = piece.get_column()
+                        new_row = piece.get_row()
+                        if not isinstance(self.virtual_board[new_row][new_column], int):
+                            piece_capture_sound.play()
+                            self.virtual_board[new_row][new_column] = piece
+            
 
 
 
