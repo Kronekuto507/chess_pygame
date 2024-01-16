@@ -94,33 +94,3 @@ class Piece:
                             moves.append((row+1,col+1))
                             break
         return moves'''
-
-
-
-
-
-class Pawn(Piece):
-    def __init__(self, color, surface, row, col):
-        super().__init__(color, surface, row, col)
-        self.name = 'pawn'
-
-
-class Knight(Piece):
-    def __init__(self, color, surface, row, col):
-        super().__init__(color, surface, row, col)
-        self.name = 'knight'
-
-                
-
-
-        
-
-    
-
-    
-
-            
-        
-       
-        
-    
