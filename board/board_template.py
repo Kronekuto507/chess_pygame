@@ -1,6 +1,12 @@
 import pygame
 from pygame.locals import *
-from classes_pieces.pieces import Pawn,Rook,Knight,Queen,Bishop,King, Piece
+from classes_pieces.pieces import Piece
+from classes_pieces.Bishop import Bishop
+from classes_pieces.King import King
+from classes_pieces.Queen import Queen
+from classes_pieces.Knight import Knight
+from classes_pieces.Rook import Rook
+from classes_pieces.Pawn import Pawn
 from .constants import VERDE,ROWS,COLS,SIZE
 
 
