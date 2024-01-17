@@ -26,7 +26,7 @@ class Board:
         '''self.w_array = [Rook('white',screen,w_starter_row,0),Knight('white',screen,w_starter_row,1)
                    ,Bishop('white',screen,w_starter_row,2),Queen('white',screen,w_starter_row,3),King('white',screen,w_starter_row,4)
                     ,Bishop('white',screen,w_starter_row,5),Knight('white',screen,w_starter_row,6),Rook('white',screen,w_starter_row,7)]'''
-        self.b_array = [Rook('black',screen,b_starter_row,0),0,0,0,0,0,0,Rook('black',screen,b_starter_row,7)]
+        self.b_array = [Rook('black',screen,b_starter_row,0),0,Bishop('black',screen,b_starter_row,2),Queen('black',screen,b_starter_row,3),0,Bishop('black',screen,b_starter_row,5),0,Rook('black',screen,b_starter_row,7)]
         self.w_array = [Rook('white',screen,w_starter_row,0),0,0,0,0,0,0,Rook('white',screen,w_starter_row,7)]        
     
     def draw_cell(self,surface,color,x,y):
