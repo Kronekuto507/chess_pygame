@@ -11,77 +11,27 @@ class Bishop(Piece):
     def generate_moves(self, board):
 
         moves = []
-        south_east = []
-        previous_row = self.row
-        previous_col = self.col
-        #Code for adding the southeast possible moves for the piece
-        south_east_counter = 0
-        for row in range(self.row,ROWS):
-            for col in range(self.col,COLS):
-                if row != self.row:
-                    diff_row = previous_row - row
-                    diff_col = previous_col - col
-                    if isinstance(board[row][col], int):
-                        if abs(diff_col) == abs(diff_row):
-                            south_east.append((row,col))
-                            previous_row = south_east[south_east_counter][0]
-                            previous_col = south_east_counter[south_east_counter][1]
-                            south_east_counter += 1
-                            #Updates the 
-
-
-        north_east = []
-        #Code for adding the north eastern possible moves for the bishop
-        previous_row = self.row
-        previous_col = self.col
-        north_east_counter = 0
-        for row in range(self.row,-1,-1):
-            for col in range(self.col,COLS):
-                if row != self.row:
-                    diff_row = previous_row - row
-                    diff_col = previous_col - col
-                    if isinstance(board[row][col], int):
-                        if abs(diff_col) == abs(diff_row):
-                            north_east.append((row,col))
-                            previous_row = north_east[north_east_counter][0]
-                            previous_col = north_east_counter[north_east_counter][1]
-                            north_east_counter += 1
-        
-        north_west = []
-        #Code for adding the north western possible moves for the bishop
-        previous_row = self.row
-        previous_col = self.col
-        north_west_counter = 0
-        for row in range(self.row, -1,-1):
-            for col in range(self.col,-1,-1):
-                if row != self.row:
-                    diff_row = previous_row - row
-                    diff_col = previous_col - col
-                    if isinstance(board[row][col],int):
-                        if abs(diff_col) == abs(diff_row):
-                            north_west.append((row,col))
-                            previous_row = north_west[north_west_counter][0]
-                            previous_col = north_west[north_west_counter][1]
-                            north_west_counter += 1
-        
-        south_west = []
-        previous_row = self.row
-        previous_col = self.col
-        south_west_counter = 0
-        for row in range(self.row,ROWS):
-            for col in range(self.col,-1,-1):
-                if row != self.row:
-                    diff_row = previous_row - row
-                    diff_col = previous_col - col
-                    if isinstance(board[row][col],int):
-                        if abs(diff_col) == abs(diff_row):
-                            south_west.append((row,col))
-                            previous_row = south_west[south_west_counter][0]
-                            previous_col = south_west[south_west_counter][1]
-                            south_east_counter += 1
-
+        south_east = self.calc_bishop_moves(start_row=self.row,end_row=ROWS,start_col=self.col,end_col=COLS,step_row=1,step_col=1,board=board)
+        north_east = self.calc_bishop_moves(start_row=self.row,end_row=-1,start_col=self.col,end_col=COLS,step_row=-1,step_col=1,board=board)
+        north_west = self.calc_bishop_moves(start_row=self.row,end_row=-1,start_col=self.col,end_col=-1,step_row=-1,step_col=-1,board=board)
+        south_west = self.calc_bishop_moves(start_row=self.row,end_row=ROWS,start_col=self.col,end_col=-1,step_row=1,step_col=-1,board=board)
         moves = north_east + north_west + south_east + south_west
         return moves
-
-    def show_squares(self):
-        pass
+    
+    def calc_bishop_moves(self,start_row,end_row,start_col,end_col,step_row,step_col,board):
+        array_moves = []
+        array_counter = 0
+        previous_col - self.row
+        previous_col = self.col
+        for row in range(start_row,end_row,step_row):
+            for col in range(start_col,end_col,step_col):
+                if row != self.row:
+                    diff_row = previous_row - row
+                    diff_col = previous_col - col
+                    if isinstance(board[row][col],int):
+                        if abs(diff_col) == abs(diff_row):
+                            array_counter.append((row,col))
+                            previous_row = array_moves[array_counter][0]
+                            previous_col = array_moves[array_counter][1]
+                            array_counter += 1
+        return array_moves
