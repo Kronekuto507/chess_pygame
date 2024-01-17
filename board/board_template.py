@@ -1,6 +1,6 @@
 import pygame
 from pygame.locals import *
-from classes_pieces.pieces import Piece
+from classes_pieces.Piece import Piece
 from classes_pieces.Bishop import Bishop
 from classes_pieces.King import King
 from classes_pieces.Queen import Queen
@@ -125,8 +125,6 @@ class Board:
             print(row)
                      
         
-
-
     def generate_moves(self):
         for row in self.virtual_board:
             for element in row:

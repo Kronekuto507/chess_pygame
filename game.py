@@ -2,7 +2,7 @@ import pygame
 from pygame.locals import *
 from board.board_template import *
 from board.constants import WIDTH,HEIGHT,CREMA
-from classes_pieces.pieces import *
+from classes_pieces.Piece import *
 
 
 class Game:
@@ -31,7 +31,6 @@ class Game:
                             counter_click += 1
                         else:
                             chess_board.move_piece_on_board(x,y)
-                            
                             counter_click = 0
             self.screen.fill(CREMA)
             chess_board.draw_board()

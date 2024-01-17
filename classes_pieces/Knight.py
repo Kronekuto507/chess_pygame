@@ -1,6 +1,6 @@
 import pygame
 from pygame.locals import *
-from classes_pieces.pieces import Piece
+from classes_pieces.Piece import Piece
 
 class Knight(Piece):
     def __init__(self, color, surface, row, col):
