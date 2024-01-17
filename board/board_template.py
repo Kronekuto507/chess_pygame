@@ -27,8 +27,7 @@ class Board:
                    ,Bishop('white',screen,w_starter_row,2),Queen('white',screen,w_starter_row,3),King('white',screen,w_starter_row,4)
                     ,Bishop('white',screen,w_starter_row,5),Knight('white',screen,w_starter_row,6),Rook('white',screen,w_starter_row,7)]'''
         self.b_array = [Rook('black',screen,b_starter_row,0),0,0,0,0,0,0,Rook('black',screen,b_starter_row,7)]
-        self.w_array = [Rook('white',screen,w_starter_row,0),0,0,0,0,0,0,Rook('white',screen,w_starter_row,7)] 
-        self.previous_selected = None       
+        self.w_array = [Rook('white',screen,w_starter_row,0),0,0,0,0,0,0,Rook('white',screen,w_starter_row,7)]        
     
     def draw_cell(self,surface,color,x,y):
         pygame.draw.rect(surface,color,(x,y,SIZE,SIZE))
@@ -86,8 +85,8 @@ class Board:
         if piece_arg is (Rook,Knight,Bishop,Queen,King,Pawn) and hasattr(piece_arg,"generate_moves"):
             return piece_arg.generate_moves(self.virtual_board)
         
-    def is_ally_piece(self,other_piece):
-        return True if self.color == other_piece.color else False
+    def is_ally_piece(self,main_piece,other_piece):
+        return True if main_piece.color == other_piece.color else False
                 
     
     def select_piece_on_board(self,x,y):
@@ -96,14 +95,19 @@ class Board:
                 if isinstance(piece,Piece):
                     if self.selected_piece is None: #Se detecta si no existe ya un objeto seleccionado, de ser el caso, seleccionar directamente
                         piece.select_piece(x,y)
+                        self.selected_piece = piece
                     else: #Si ya hay un objeto, este 
                         selected_row = piece.get_row()
                         selected_col = piece.get_column()
                         self.virtual_board[selected_row][selected_col].deselect()
                         piece.select_piece(x,y)
+                        self.selected_piece = piece
 
     def move_piece_on_board(self,x,y):
         piece_capture_sound = pygame.mixer.Sound(r"C:\Users\aaron\Desktop\Programacion\Python\ajedrez\sounds\capture.mp3")
+        old_column = 0
+        old_row = 0
+        moved_piece = None
         for row in self.virtual_board:
             for piece in row:
                 if isinstance(piece,Piece):
@@ -111,29 +115,32 @@ class Board:
                         old_column = piece.get_column()
                         old_row = piece.get_row()
                         piece.move_piece(x,y)
-                        self.previous_selected = piece
+                        moved_piece = piece
                         piece.deselect()
-                        '''self.virtual_board[old_row][old_column] = 0
-                        new_column = piece.get_column()
-                        new_row = piece.get_row()
-                        if not isinstance(self.virtual_board[new_row][new_column], int):
-                            piece_capture_sound.play()
-                            self.virtual_board[new_row][new_column] = piece'''
         for row in self.virtual_board:
             print(row)
+        self.update_board_status(old_row,old_column,moved_piece.get_column(),moved_piece.get_row(),moved_piece)
+        self.generate_moves()
+        for row in self.virtual_board:
+            print(row)
+                     
+        
+
+
     def generate_moves(self):
         for row in self.virtual_board:
             for element in row:
                 valid_types = (Rook,Knight,Bishop,Queen,King,Pawn)
                 if isinstance(element,valid_types)  and hasattr(element,"generate_moves"):
-                    moves = element.generate_moves(self.virtual_board)
+                    moves = element.generate_moves(self)
                     element.assign_moves(moves)
                     print(element.moves)
-        
-        for row in self.virtual_board:
-            for element in row:
-                if isinstance(element,Piece):
-                    print(element.moves)
+
+    def update_board_status(self,row,column,new_column,new_row,piece):
+        self.virtual_board[row][column] = 0
+        self.virtual_board[new_row][new_column] = piece
+
+
                             
             
 
