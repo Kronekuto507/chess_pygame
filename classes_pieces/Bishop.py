@@ -20,18 +20,23 @@ class Bishop(Piece):
     
     def calc_bishop_moves(self,start_row,end_row,start_col,end_col,step_row,step_col,board):
         array_moves = []
-        array_counter = 0
-        previous_col - self.row
+        previous_row = self.row
         previous_col = self.col
         for row in range(start_row,end_row,step_row):
+            next_row = previous_row + step_row
+            next_col = previous_col + step_col
             for col in range(start_col,end_col,step_col):
-                if row != self.row:
-                    diff_row = previous_row - row
-                    diff_col = previous_col - col
-                    if isinstance(board[row][col],int):
-                        if abs(diff_col) == abs(diff_row):
-                            array_counter.append((row,col))
-                            previous_row = array_moves[array_counter][0]
-                            previous_col = array_moves[array_counter][1]
-                            array_counter += 1
+                if row != self.row and col != self.col:
+                    if row==next_row and col == next_col:
+                        if isinstance(board.virtual_board[row][col],int):
+                            array_moves.append((row,col))
+                            previous_row = row
+                            previous_col = col
+                            break
+                        else:
+                            if board.is_ally_piece(self,board.virtual_board[row][col]):
+                                break
+                            else:
+                                array_moves.append((row,col))
+                                break
         return array_moves
