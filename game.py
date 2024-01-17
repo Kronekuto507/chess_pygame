@@ -16,22 +16,23 @@ class Game:
         chess_board = Board(self.screen)
         chess_board.create_virtual_board()
         chess_board.generate_moves()
+        counter_click = 0
         while self.is_running:         
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.is_running = False
                 elif event.type == MOUSEBUTTONDOWN:
-
                     if event.button == 1:
-                        print('ABAJO')
                         x,y = event.pos
-                        chess_board.select_piece_on_board(x,y)
-
-                    elif event.button == 3:
-                        x,y = event.pos
-                        chess_board.move_piece_on_board(x,y)
-                        chess_board.generate_moves()
-
+                        print(counter_click)
+                        print(x)
+                        if counter_click == 0:
+                            chess_board.select_piece_on_board(x,y)
+                            counter_click += 1
+                        else:
+                            chess_board.move_piece_on_board(x,y)
+                            
+                            counter_click = 0
             self.screen.fill(CREMA)
             chess_board.draw_board()
             #Si hay una pieza seleccionada, entonces esta muestra las celdas a las que puede ir  
