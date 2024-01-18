@@ -22,7 +22,7 @@ class Game:
                 if event.type == pygame.QUIT:
                     self.is_running = False
                 elif event.type == MOUSEBUTTONDOWN:
-                    if event.button == 1:
+                    if event.button == 1: #Esta parte necesita ser debuggeada
                         x,y = event.pos
                         print(counter_click)
                         print(x)
