@@ -19,13 +19,13 @@ class Board:
         self.selected_piece = None
         self.screen = screen
         b_starter_row = 0
-        self.b_array = [Rook('black',screen,b_starter_row,0),0
+        self.b_array = [Rook('black',screen,b_starter_row,0),Knight('black',screen,b_starter_row,1)
                    ,Bishop('black',screen,b_starter_row,2),Queen('black',screen,b_starter_row,3),King('black',screen,b_starter_row,4)
-                    ,Bishop('black',screen,b_starter_row,5),0,Rook('black',screen,b_starter_row,7)]
+                    ,Bishop('black',screen,b_starter_row,5),Knight('black',screen,b_starter_row,6),Rook('black',screen,b_starter_row,7)]
         w_starter_row = 7
-        self.w_array = [Rook('white',screen,w_starter_row,0),0
+        self.w_array = [Rook('white',screen,w_starter_row,0),Knight('white',screen,w_starter_row,1)
                    ,Bishop('white',screen,w_starter_row,2),Queen('white',screen,w_starter_row,3),King('white',screen,w_starter_row,4)
-                    ,Bishop('white',screen,w_starter_row,5),0,Rook('white',screen,w_starter_row,7)]
+                    ,Bishop('white',screen,w_starter_row,5),Knight('white',screen,w_starter_row,6),Rook('white',screen,w_starter_row,7)]
 
     
     def draw_cell(self,surface,color,x,y):
