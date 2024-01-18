@@ -10,14 +10,16 @@ class King(Piece):
         self.has_moved = False
         self.is_checked = False
     def generate_moves(self, board):
+        starter_row = self.row - 1
+        later_row = self.row + 2
+        starter_col = self.col - 1
+        later_col = self.col + 2
         moves = []
-        last_range = 7
-        initial_range = 0
-        offset_x = (self.row + 1 if self.row != last_range else self.row, self.row - 1 if self.row != initial_range else self.row ) #Esto posiblemente tenga errores, revisar
-        offset_y = (self.col + 1 if self.col  != last_range else self.col, self.col - 1 if self.col != initial_range else self.col)
-
-        for row in range(ROWS):
-            for col in range(COLS):
-                if isinstance(board[row][col],int):
-                    if row in offset_x and col in offset_y: #Este for posiblemente tenga errores, revisar luego de correr
+        for row in range(starter_row,later_row):
+            for col in range(starter_col,later_col):
+                if row<= 7 and row >= 0 and col <= 7 and col>= 0:
+                    if isinstance(board.virtual_board[row][col],int):
                         moves.append((row,col))
+        return moves
+        
+
