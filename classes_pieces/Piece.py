@@ -1,7 +1,7 @@
 import pygame
 from pygame.locals import *
 from pathlib import Path
-from board.constants import SIZE,DIM_GREY,ROWS,COLS
+from board.constants import *
 import math
 class Piece:
     def __init__(self, color, surface,row,col):
@@ -69,9 +69,15 @@ class Piece:
 
 
     def show_squares(self):
-            for move in self.moves:
-                coord_x,coord_y = SIZE*move[1],SIZE*move[0]
-                pygame.draw.rect(self.surface,(0,0,0),(coord_x,coord_y,SIZE,SIZE))
+
+        transparent_surface = pygame.Surface((SIZE,SIZE),pygame.SRCALPHA)
+        alpha_value = 100
+        green_with_alpha = TRANSPARENT_GREEN + (alpha_value,)
+
+        transparent_surface.fill(green_with_alpha)
+        for move in self.moves:
+            coord_x,coord_y = SIZE*move[1],SIZE*move[0]
+            self.surface.blit(transparent_surface,(coord_x,coord_y))
         
 
     def get_new_coordinates(self,x,y):
