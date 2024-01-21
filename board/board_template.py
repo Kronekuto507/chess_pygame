@@ -103,7 +103,7 @@ class Board:
                         self.selected_piece = piece
 
     def move_piece_on_board(self,x,y):
-        piece_capture_sound = pygame.mixer.Sound(r"C:\Users\aaron\Desktop\Programacion\Python\ajedrez\sounds\capture.mp3")
+        
         old_column = 0
         old_row = 0
         moved_piece = None
@@ -113,17 +113,13 @@ class Board:
                     if piece.is_selected:
                         old_column = piece.get_column()
                         old_row = piece.get_row()
-                        piece.move_piece(x,y)
+                        piece.move_piece(x,y,self)
                         if piece.name == 'pawn':
                             piece.has_moved = True
                         moved_piece = piece
                         piece.deselect()
-        for row in self.virtual_board:
-            print(row)
         self.update_board_status(old_row,old_column,moved_piece.get_column(),moved_piece.get_row(),moved_piece)
         self.generate_moves()
-        for row in self.virtual_board:
-            print(row)
                      
         
     def generate_moves(self):
@@ -133,23 +129,37 @@ class Board:
                 if isinstance(element,valid_types)  and hasattr(element,"generate_moves"):
                     moves = element.generate_moves(self)
                     element.assign_moves(moves)
-                    print(element.moves)
 
     def update_board_status(self,row,column,new_column,new_row,piece):
+
+        piece_capture_sound = pygame.mixer.Sound(r"C:\Users\aaron\Desktop\Programacion\Python\ajedrez\sounds\capture.mp3")
+        piece_move_sound = pygame.mixer.Sound(r"C:\Users\aaron\Desktop\Programacion\Python\ajedrez\sounds\move-self.mp3")
+
+        if isinstance(self.virtual_board[new_row][new_column],int):
+            piece_move_sound.play()
+        elif not self.is_ally_piece(self.virtual_board[row][column],self.virtual_board[new_row][new_column]):
+            piece_capture_sound.play()
+
         self.virtual_board[row][column] = 0
         self.virtual_board[new_row][new_column] = piece
 
     def castle(self,king):
-        starter_rook_pos_q = self.virtual_board[king.row][0]
-        starter_rook_pos_k = self.virtual_board[king.row][SIZE - 1]
-        king_side_pos = king.col + 2
-        queen_side_pos = king.col - 2
-        if isinstance(self.virtual[king.row][king_side_pos],int):
-            king.col = king_side_pos
-            starter_rook_pos_k.col = starter_rook_pos_k.col - 2
-        if isinstance(self.virtual_board[king.row][queen_side_pos], int):
-            king.col = queen_side_pos
-            starter_rook_pos_q = starter_rook_pos_q.col - 3
+        king_side_pos = 6
+        queen_side_pos = 2
+
+        def castling_logic(king,column,value = 5):
+            self.virtual_board[king.row][column].col = value
+            aux = self.virtual_board[king.row][column]
+            self.virtual_board[king.row][aux.col] = aux
+            self.virtual_board[king.row][column] = 0
+            self.virtual_board[king.row][aux.col].calc_pos()
+
+        if king.col == king_side_pos:
+            castling_logic(king,COLS-1)
+
+        elif king.col == queen_side_pos:
+            castling_logic(king,0,value=3)
+
 
 
         
