@@ -18,6 +18,8 @@ class Board:
         self.virtual_board = [] #Representacion virtual del tablero
         self.selected_piece = None
         self.screen = screen
+        self.can_castle_black = True
+        self.can_castle_white = True
         b_starter_row = 0
         self.b_array = [Rook('black',screen,b_starter_row,0),Knight('black',screen,b_starter_row,1)
                    ,Bishop('black',screen,b_starter_row,2),Queen('black',screen,b_starter_row,3),King('black',screen,b_starter_row,4)
@@ -136,6 +138,23 @@ class Board:
     def update_board_status(self,row,column,new_column,new_row,piece):
         self.virtual_board[row][column] = 0
         self.virtual_board[new_row][new_column] = piece
+
+    def castle(self,king):
+        starter_rook_pos_q = self.virtual_board[king.row][0]
+        starter_rook_pos_k = self.virtual_board[king.row][SIZE - 1]
+        king_side_pos = king.col + 2
+        queen_side_pos = king.col - 2
+        if isinstance(self.virtual[king.row][king_side_pos],int):
+            king.col = king_side_pos
+            starter_rook_pos_k.col = starter_rook_pos_k.col - 2
+        if isinstance(self.virtual_board[king.row][queen_side_pos], int):
+            king.col = queen_side_pos
+            starter_rook_pos_q = starter_rook_pos_q.col - 3
+
+
+        
+
+
 
 
                             
