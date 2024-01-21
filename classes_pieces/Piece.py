@@ -63,7 +63,11 @@ class Piece:
                 if new_x == move[0] and new_y == move[1]:
                     self.row = new_x
                     self.col = new_y
+                    if self.name == 'king':
+                        self.has_moved = True
+
                     self.calc_pos()
+
                     piece_move_sound.play()
                     break
 
