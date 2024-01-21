@@ -9,6 +9,8 @@ class King(Piece):
         self.name = 'king'
         self.has_moved = False
         self.is_checked = False
+        self.castling_queen_side = (self.row,self.col - 2)
+        self.castling_king_side = (self.row,self.col + 2)
     def generate_moves(self, board):
         starter_row = self.row - 1
         later_row = self.row + 2
@@ -20,6 +22,10 @@ class King(Piece):
                 if row<= 7 and row >= 0 and col <= 7 and col>= 0:
                     if isinstance(board.virtual_board[row][col],int):
                         moves.append((row,col))
+                        if self.has_moved == False:
+                            moves.append((self.row,self.col + 2 ))
+                            moves.append((self.row,self.col - 2))
         return moves
+    
         
 
