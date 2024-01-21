@@ -55,20 +55,21 @@ class Piece:
     def get_starting_square_coordinates(self):
         return (self.get_row(),self.get_column())
     
-    def move_piece(self, x, y):
-        piece_move_sound = pygame.mixer.Sound(r"C:\Users\aaron\Desktop\Programacion\Python\ajedrez\sounds\move-self.mp3")
+    def move_piece(self, x, y,board):
+        
         if self.is_selected:
-            new_x,new_y = self.get_new_coordinates(x,y)
+            new_x,new_y = self.get_new_coordinates(x,y) 
             for move in self.moves:
                 if new_x == move[0] and new_y == move[1]:
                     self.row = new_x
                     self.col = new_y
                     if self.name == 'king':
                         self.has_moved = True
-
+                        if self.col == self.king_side_pos or self.col == self.queen_side_pos:
+                            board.castle(self)
+                    if self.name == 'rook':
+                        self.has_moved = True
                     self.calc_pos()
-
-                    piece_move_sound.play()
                     break
 
 
