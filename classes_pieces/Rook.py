@@ -7,7 +7,7 @@ class Rook(Piece):
     def __init__(self, color, surface, row, col):
         super().__init__(color, surface, row, col)
         self.name = 'rook'
-        self.is_moved  = False
+        self.has_moved  = False
 
     def generate_moves(self,board):
 
