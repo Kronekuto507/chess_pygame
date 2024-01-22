@@ -3,6 +3,7 @@ from pygame.locals import *
 from board.board_template import *
 from board.constants import WIDTH,HEIGHT,CREMA
 from classes_pieces.Piece import *
+from player.player_class import Player
 
 
 class Game:
@@ -13,10 +14,12 @@ class Game:
         self.screen = pygame.display.set_mode(self.size)
     #Aniluz
     def run(self):
-        chess_board = Board(self.screen)
+        players = [Player('white','aaron'),Player('black','hector')]
+        chess_board = Board(self.screen,players[0],players[1])
         chess_board.create_virtual_board()
         chess_board.generate_moves()
         counter_click = 0
+        index = 0
         while self.is_running:         
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -24,14 +27,11 @@ class Game:
                 elif event.type == MOUSEBUTTONDOWN:
                     if event.button == 1: #Esta parte necesita ser debuggeada
                         x,y = event.pos
-                        print(counter_click)
-                        print(x)
-                        if counter_click == 0:
-                            chess_board.select_piece_on_board(x,y)
-                            counter_click += 1
-                        else:
-                            chess_board.move_piece_on_board(x,y)
-                            counter_click = 0
+                        chess_board.select_piece_on_board(x,y)
+                    elif event.button == 3:
+                        x,y = event.pos
+                        chess_board.move_piece_on_board(x,y)
+                        chess_board.current_player_color = 'black' if chess_board.current_player_color == 'white' else 'white'
             self.screen.fill(CREMA)
             chess_board.draw_board()
             #Si hay una pieza seleccionada, entonces esta muestra las celdas a las que puede ir  
