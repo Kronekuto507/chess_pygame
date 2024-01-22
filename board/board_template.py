@@ -12,14 +12,15 @@ from .constants import VERDE,ROWS,COLS,SIZE
 
 class Board:
     
-    def __init__(self, screen):
+    def __init__(self, screen,white_player,black_player):
         #Plantilla en donde se dibujara el resto de cuadros
         #Diccionario que almacena las coordenadas de las superficie (Posiblemente innecesario, puede que lo elimine después)
         self.virtual_board = [] #Representacion virtual del tablero
         self.selected_piece = None
         self.screen = screen
-        self.can_castle_black = True
-        self.can_castle_white = True
+        self.white_player = white_player
+        self.black_player = black_player
+        self.current_player_color = 'white'
         b_starter_row = 0
         self.b_array = [Rook('black',screen,b_starter_row,0),Knight('black',screen,b_starter_row,1)
                    ,Bishop('black',screen,b_starter_row,2),Queen('black',screen,b_starter_row,3),King('black',screen,b_starter_row,4)
@@ -91,7 +92,7 @@ class Board:
     def select_piece_on_board(self,x,y):
         for row in self.virtual_board:
             for piece in row:
-                if isinstance(piece,Piece):
+                if isinstance(piece,Piece) and piece.color == self.current_player_color:
                     if self.selected_piece is None: #Se detecta si no existe ya un objeto seleccionado, de ser el caso, seleccionar directamente
                         piece.select_piece(x,y)
                         self.selected_piece = piece
@@ -109,7 +110,7 @@ class Board:
         moved_piece = None
         for row in self.virtual_board:
             for piece in row:
-                if isinstance(piece,Piece):
+                if isinstance(piece,Piece) and piece.color == self.current_player_color:
                     if piece.is_selected:
                         old_column = piece.get_column()
                         old_row = piece.get_row()
@@ -159,6 +160,9 @@ class Board:
 
         elif king.col == queen_side_pos:
             castling_logic(king,0,value=3)
+    
+    def set_current_player_color(self,player_color):
+        self.current_player_color = player_color
 
 
 
