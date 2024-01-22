@@ -69,8 +69,8 @@ class Piece:
                             board.castle(self)
                     if self.name == 'rook':
                         self.has_moved = True
+                    
                     self.calc_pos()
-                    break
 
 
     def show_squares(self):
