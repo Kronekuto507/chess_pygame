@@ -107,7 +107,7 @@ class Board:
         
         old_column = 0
         old_row = 0
-        moved_piece = None
+
         for row in self.virtual_board:
             for piece in row:
                 if isinstance(piece,Piece) and piece.color == self.current_player_color:
@@ -119,7 +119,14 @@ class Board:
                             piece.has_moved = True
                         moved_piece = piece
                         piece.deselect()
-        self.update_board_status(old_row,old_column,moved_piece.get_column(),moved_piece.get_row(),moved_piece)
+
+        if moved_piece.name == 'pawn' and moved_piece.has_promoted():
+            self.promote(moved_piece,old_row,old_column)
+        elif moved_piece.name in ('pawn','rook','queen','king','knight','bishop'):
+            self.update_board_status(old_row,old_column,moved_piece.get_column(),moved_piece.get_row(),moved_piece)
+        
+        for row in self.virtual_board:
+            print(row)
         self.generate_moves()
                      
         
@@ -143,6 +150,7 @@ class Board:
 
         self.virtual_board[row][column] = 0
         self.virtual_board[new_row][new_column] = piece
+        self.virtual_board[new_row][new_column].calc_pos()
 
     def castle(self,king):
         king_side_pos = 6
@@ -163,6 +171,11 @@ class Board:
     
     def set_current_player_color(self,player_color):
         self.current_player_color = player_color
+    
+    def promote(self,pawn,previous_row,previous_col):
+        new_queen = Queen(pawn.color,pawn.surface,pawn.row,pawn.col)
+        self.update_board_status(row=previous_row,column=previous_col,new_column=pawn.col,new_row=pawn.row,piece=new_queen)
+        new_queen.create_image()
 
 
 
