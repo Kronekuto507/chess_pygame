@@ -63,14 +63,17 @@ class Piece:
                 if new_x == move[0] and new_y == move[1]:
                     self.row = new_x
                     self.col = new_y
-                    if self.name == 'king':
-                        self.has_moved = True
-                        if self.col == self.king_side_pos or self.col == self.queen_side_pos:
-                            board.castle(self)
-                    if self.name == 'rook':
-                        self.has_moved = True
+            if self.name == 'king':
+                self.has_moved = True
+                if self.col == self.king_side_pos or self.col == self.queen_side_pos:
+                        board.castle(self)
+            if self.name == 'rook':
+                self.has_moved = True
+            
+            if self.name == 'pawn' and self.promo_rank == self.row:
+                self.promoted = True
                     
-                    self.calc_pos()
+                    
 
 
     def show_squares(self):
