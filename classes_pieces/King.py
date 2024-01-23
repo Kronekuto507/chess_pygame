@@ -29,7 +29,7 @@ class King(Piece):
             king_side_pos = self.col + 2
             queen_side_pos = self.col - 2
             rooks = self.get_rooks(board)
-            if not rooks[1].has_moved and (isinstance(board.virtual_board[self.row][self.col + 1],int) and 
+            if not rooks[1].has_moved and (isinstance(board.virtual_board[self.row][self.col + 1],int) and #AQUI HAY BUG
                 isinstance(board.virtual_board[self.row][self.col + 2],int)):
                 moves.append((self.row,king_side_pos))
             if not rooks[0].has_moved and (isinstance(board.virtual_board[self.row][self.col - 1],int) and
