@@ -122,6 +122,7 @@ class Board:
 
         if moved_piece.name == 'pawn' and moved_piece.has_promoted():
             self.promote(moved_piece,old_row,old_column)
+
         elif moved_piece.name in ('pawn','rook','queen','king','knight','bishop'):
             self.update_board_status(old_row,old_column,moved_piece.get_column(),moved_piece.get_row(),moved_piece)
         
@@ -157,11 +158,13 @@ class Board:
         queen_side_pos = 2
 
         def castling_logic(king,column,value = 5):
-            self.virtual_board[king.row][column].col = value
-            aux = self.virtual_board[king.row][column]
-            self.virtual_board[king.row][aux.col] = aux
-            self.virtual_board[king.row][column] = 0
-            self.virtual_board[king.row][aux.col].calc_pos()
+            self.virtual_board[king.row][column].col = value #Se asigna la columna nueva a la que se movera la torre
+            rook = self.virtual_board[king.row][column] #Se almacena la torre en una variable auxiliar
+            self.virtual_board[king.row][rook.col] = rook #Se intercambia la posicion del rey y la torre
+            self.virtual_board[king.row][column] = 0 #La posicion de la torre original se actualiza a 0 en el programa
+            
+            self.virtual_board[king.row][rook.col].calc_pos()
+            self.virtual_board[king.row][rook.col].has_moved = True
 
         if king.col == king_side_pos:
             castling_logic(king,COLS-1)
