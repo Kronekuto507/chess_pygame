@@ -28,6 +28,7 @@ class Pawn(Piece):
                         moves.append((next_row, self.col))
                     if isinstance(board.virtual_board[next_row + step][self.col],int):
                         moves.append((next_row + step, self.col))
+                        
         for element in offsett_capture:
             row = self.row + element[0]
             col = self.col + element[1]
@@ -35,7 +36,6 @@ class Pawn(Piece):
                 if isinstance(board.virtual_board[row][col],Piece) and not board.is_ally_piece(self,board.virtual_board[row][col]):
                     moves.append((row,col))
 
-                
         return moves
     
     def has_promoted(self):
