@@ -64,9 +64,10 @@ class Piece:
                     self.row = new_x
                     self.col = new_y
             if self.name == 'king':
-                if (self.col == self.king_side_pos or self.col == self.queen_side_pos) and not self.has_moved:
+                if (self.col == self.king_side_pos or self.col == self.queen_side_pos) and not self.has_moved and board.checked_status == False:
                     board.castle(self)
                     self.has_moved = True
+                self.has_moved = True
 
             if self.name == 'rook':
                 self.has_moved = True

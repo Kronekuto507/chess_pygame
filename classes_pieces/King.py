@@ -36,8 +36,9 @@ class King(Piece):
                 isinstance(board.virtual_board[self.row][self.col - 2],int) and
                 isinstance(board.virtual_board[self.row][self.col - 3], int)):
                 moves.append((self.row,queen_side_pos))
-                     
-        return moves
+        
+        valid_moves = self.get_valid_moves(moves,board.get_enemy_pieces())
+        return valid_moves
     
     def get_rooks(self,board):
         rook_array = []
@@ -45,6 +46,15 @@ class King(Piece):
             if isinstance(board.virtual_board[self.row][col],Rook):
                 rook_array.append(board.virtual_board[self.row][col])
         return rook_array
+    
+    def get_valid_moves(self,moves,enemy_pieces): #HAY UN BUG CON EL PEON
+        valid_moves = moves
+        for piece in enemy_pieces:
+            for move in moves:
+                for piece_move in piece.moves:
+                    if move == piece_move and piece.color != self.color:
+                        valid_moves.remove(move)
+        return valid_moves
 
         
     
