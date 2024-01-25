@@ -3,6 +3,7 @@ from pygame.locals import *
 from classes_pieces.Piece import Piece
 from board.constants import *
 
+
 class Bishop(Piece):
     def __init__(self,color,surface,row,col):
         super().__init__(color,surface,row,col)
@@ -19,6 +20,7 @@ class Bishop(Piece):
         return moves
     
     def calc_bishop_moves(self,start_row,end_row,start_col,end_col,step_row,step_col,board):
+        from classes_pieces.King import King
         array_moves = []
         previous_row = self.row
         previous_col = self.col
@@ -28,7 +30,7 @@ class Bishop(Piece):
             for col in range(start_col,end_col,step_col):
                 if row != self.row and col != self.col:
                     if row==next_row and col == next_col:
-                        if isinstance(board.virtual_board[row][col],int):
+                        if isinstance(board.virtual_board[row][col],int) or (not board.is_ally_piece(self,board.virtual_board[row][col]) and isinstance(board.virtual_board[row][col],King)):
                             array_moves.append((row,col))
                             previous_row = row
                             previous_col = col
