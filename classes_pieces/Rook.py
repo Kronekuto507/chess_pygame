@@ -21,10 +21,11 @@ class Rook(Piece):
         return moves
     
     def calc_rook_moves(self,start,end,step,board,exchange_rowNcol = False):
+        from classes_pieces.King import King
         array_move = []
         if exchange_rowNcol:
             for row in range(start,end,step):
-                if isinstance(board.virtual_board[row][self.col],int):
+                if isinstance(board.virtual_board[row][self.col],int) or ( not board.is_ally_piece(self,board.virtual_board[row][self.col]) and isinstance(board.virtual_board[row][self.col],King)):
                     array_move.append((row,self.col)) #Que carajo era ese error lols
                 else:
                     if row != self.row:
@@ -36,7 +37,7 @@ class Rook(Piece):
                                 break
         else:
             for col in range(start,end,step):
-                if isinstance(board.virtual_board[self.row][col],int):
+                if isinstance(board.virtual_board[self.row][col],int) or ( not board.is_ally_piece(self,board.virtual_board[self.row][col]) and isinstance(board.virtual_board[self.row][col],King)):
                     array_move.append((self.row,col))
                 else:
                     if col != self.col:
