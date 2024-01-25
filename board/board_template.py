@@ -73,12 +73,6 @@ class Board:
             for col in range(COLS):
                 if self.virtual_board[row] is not Piece and (row != 0 and row != 7 and row != 1 and row != 6): #Para dejar el polimorfismo alli
                     self.virtual_board[row].append(0)
-    
-    def is_in_check(self):
-        pass
-
-    def is_checkmate(self):
-        pass
 
 
     def generate_pieces_moves(self, piece_arg):
@@ -179,6 +173,12 @@ class Board:
         new_queen = Queen(pawn.color,pawn.surface,pawn.row,pawn.col)
         self.update_board_status(row=previous_row,column=previous_col,new_column=pawn.col,new_row=pawn.row,piece=new_queen)
         new_queen.create_image()
+
+    def is_in_check(self):
+        pass
+
+    def is_checkmate(self):
+        pass
 
 
 
