@@ -20,6 +20,7 @@ class Bishop(Piece):
         return moves
     
     def calc_bishop_moves(self,start_row,end_row,start_col,end_col,step_row,step_col,board):
+        #REVISAR CUALQUIER ERROR
         from classes_pieces.King import King
         array_moves = []
         previous_row = self.row

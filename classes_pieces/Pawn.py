@@ -28,13 +28,13 @@ class Pawn(Piece):
                         moves.append((next_row, self.col))
                     if isinstance(board.virtual_board[next_row + step][self.col],int):
                         moves.append((next_row + step, self.col))
-                        
-        for element in offsett_capture:
-            row = self.row + element[0]
-            col = self.col + element[1]
-            if row >= 0 and row <= 7 and col>=0 and col <= 7:
-                if isinstance(board.virtual_board[row][col],Piece) and not board.is_ally_piece(self,board.virtual_board[row][col]):
-                    moves.append((row,col))
+
+            for element in offsett_capture:
+                row = self.row + element[0]
+                col = self.col + element[1]
+                if row >= 0 and row <= 7 and col>=0 and col <= 7:
+                    if isinstance(board.virtual_board[row][col],Piece) and not board.is_ally_piece(self,board.virtual_board[row][col]):
+                        moves.append((row,col))
 
         return moves
     

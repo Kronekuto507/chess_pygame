@@ -103,30 +103,30 @@ class Board:
         old_column = 0
         old_row = 0
 
-        self.generate_moves()
+        
         king = self.get_king()
         enemy_pieces = self.get_enemy_pieces()
 
 
         for row in self.virtual_board:
             for piece in row:
-                if not self.is_in_check(king,enemy_pieces):
-                    if isinstance(piece,Piece) and piece.color == self.current_player_color: #COMPROBAR SI ES EL TURNO DEL JUGADOR
-                        if piece.is_selected:
-                            old_column = piece.get_column()
-                            old_row = piece.get_row()
-                            piece.move_piece(x,y,self)
-                            if piece.name == 'pawn':
-                                piece.has_moved = True
-                            moved_piece = piece
-                            piece.deselect()
-                else:
+                #if not self.is_in_check(king,enemy_pieces):
+                if isinstance(piece,Piece) and piece.color == self.current_player_color: #COMPROBAR SI ES EL TURNO DEL JUGADOR
+                    if piece.is_selected:
+                        old_column = piece.get_column()
+                        old_row = piece.get_row()
+                        piece.move_piece(x,y,self)
+                        if piece.name == 'pawn':
+                            piece.has_moved = True
+                        moved_piece = piece
+                        piece.deselect()
+                '''else:
                     if isinstance(piece,King) and piece.color == self.current_player_color:
                             old_column = piece.get_column()
                             old_row = piece.get_row()
                             piece.move_piece(x,y,self)
                             moved_piece = piece
-                            piece.deselect()
+                            piece.deselect()'''
                     
 
         if moved_piece.name == 'pawn' and moved_piece.has_promoted():
@@ -135,6 +135,7 @@ class Board:
         elif moved_piece.name in ('pawn','rook','queen','king','knight','bishop'):
             self.update_board_status(old_row,old_column,moved_piece.get_column(),moved_piece.get_row(),moved_piece)
         
+        self.generate_moves()
         for row in self.virtual_board:
             print(row)
         

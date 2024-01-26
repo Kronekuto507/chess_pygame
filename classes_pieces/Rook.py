@@ -19,7 +19,7 @@ class Rook(Piece):
         moves = east + west + north + south
 
         return moves
-    
+    #REVISAR ERRORES
     def calc_rook_moves(self,start,end,step,board,exchange_rowNcol = False):
         from classes_pieces.King import King
         array_move = []
