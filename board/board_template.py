@@ -17,11 +17,14 @@ class Board:
         #Diccionario que almacena las coordenadas de las superficie (Posiblemente innecesario, puede que lo elimine después)
         self.virtual_board = [] #Representacion virtual del tablero
         self.selected_piece = None
+        self.moved_piece = None
         self.screen = screen
         self.white_player = white_player
         self.black_player = black_player
         self.checked_status = False
         self.current_player_color = 'white'
+        self.move_counter = 0
+        self.checkmate = False
         b_starter_row = 0
         self.b_array = [Rook('black',screen,b_starter_row,0),Knight('black',screen,b_starter_row,1)
                    ,Bishop('black',screen,b_starter_row,2),Queen('black',screen,b_starter_row,3),King('black',screen,b_starter_row,4)
@@ -102,42 +105,47 @@ class Board:
         
         old_column = 0
         old_row = 0
-
-        
-        king = self.get_king()
-        enemy_pieces = self.get_enemy_pieces()
-
-
-        for row in self.virtual_board:
-            for piece in row:
-                #if not self.is_in_check(king,enemy_pieces):
-                if isinstance(piece,Piece) and piece.color == self.current_player_color: #COMPROBAR SI ES EL TURNO DEL JUGADOR
-                    if piece.is_selected:
-                        old_column = piece.get_column()
-                        old_row = piece.get_row()
-                        piece.move_piece(x,y,self)
-                        if piece.name == 'pawn':
-                            piece.has_moved = True
-                        moved_piece = piece
-                        piece.deselect()
-                '''else:
-                    if isinstance(piece,King) and piece.color == self.current_player_color:
-                            old_column = piece.get_column()
-                            old_row = piece.get_row()
-                            piece.move_piece(x,y,self)
-                            moved_piece = piece
-                            piece.deselect()'''
-                    
-
-        if moved_piece.name == 'pawn' and moved_piece.has_promoted():
-            self.promote(moved_piece,old_row,old_column)
-
-        elif moved_piece.name in ('pawn','rook','queen','king','knight','bishop'):
-            self.update_board_status(old_row,old_column,moved_piece.get_column(),moved_piece.get_row(),moved_piece)
-        
         self.generate_moves()
-        for row in self.virtual_board:
-            print(row)
+        enemy_pieces = self.get_enemy_pieces()
+        king = self.get_king()
+        is_check = self.is_in_check(king,enemy_pieces)
+        valid_moves_king = self.get_valid_moves_king(king,enemy_pieces)
+        self.virtual_board[king.get_row()][king.get_column()].assign_moves(valid_moves_king)
+        self.checkmate = False
+        if self.move_counter >= 2:
+            self.checkmate = self.is_checkmate(king,enemy_pieces)
+
+        if not self.checkmate:
+            for row in self.virtual_board:
+                for piece in row:
+                    if not is_check:
+                        if isinstance(piece,Piece) and piece.color == self.current_player_color: #COMPROBAR SI ES EL TURNO DEL JUGADOR
+                            if piece.is_selected:
+                                old_column = piece.get_column()
+                                old_row = piece.get_row()
+                                piece.move_piece(x,y,self)
+                                if piece.name == 'pawn':
+                                    piece.has_moved = True
+                                self.moved_piece = piece
+                                piece.deselect()
+                                self.move_counter += 1
+                    else:
+                        self.checked_status = True
+                        if isinstance(piece,King) and piece.color == self.current_player_color:
+                                old_column = piece.get_column()
+                                old_row = piece.get_row()
+                                piece.move_piece(x,y,self)
+                                self.moved_piece = piece
+                                piece.deselect()
+                                self.move_counter += 1
+                                self.checked_status = False
+                        
+
+            if self.moved_piece.name == 'pawn' and self.moved_piece.has_promoted():
+                self.promote(self.moved_piece,old_row,old_column)
+
+            elif self.moved_piece.name in ('pawn','rook','queen','king','knight','bishop'):
+                self.update_board_status(old_row,old_column,self.moved_piece.get_column(),self.moved_piece.get_row(),self.moved_piece)
         
                      
         
@@ -207,8 +215,13 @@ class Board:
                     return piece
 
 
-    def is_checkmate(self):
-        pass
+    def is_checkmate(self,king,pieces):
+        if not self.is_in_check(king,pieces):
+            return False
+        
+        if king.moves:
+            return True
+        
 
     def get_enemy_pieces(self):
         pieces = []
@@ -216,7 +229,32 @@ class Board:
             for column in row:
                 if isinstance(column,Piece) and column.color != self.current_player_color:
                     pieces.append(column)
+        for piece in pieces:
+            print(f"{piece.color} and {piece.name}")
         return pieces
+    
+    def check_next_turn(self,x,y):
+        board_copy_analysis = self.virtual_board.copy()
+        for row in board_copy_analysis:
+            for piece in row:
+                #if not self.is_in_check(king,enemy_pieces):
+                if isinstance(piece,Piece) and piece.color == self.current_player_color: #COMPROBAR SI ES EL TURNO DEL JUGADOR
+                    if piece.is_selected:
+                        piece.move_piece(x,y,self)
+                        if piece.name == 'pawn':
+                            piece.has_moved = True
+                        piece.deselect()
+        return board_copy_analysis
+    
+    def get_valid_moves_king(self,king,enemy_pieces): #HAY UN BUG CON EL PEON
+        valid_moves = king.moves
+        for piece in enemy_pieces:
+            for move in king.moves:
+                for piece_move in piece.moves:
+                    if move == piece_move:
+                        valid_moves.remove(move)
+        return valid_moves
+
 
 
 

@@ -19,7 +19,7 @@ class Game:
         chess_board.create_virtual_board()
         chess_board.generate_moves()
 
-        while self.is_running:         
+        while self.is_running and not chess_board.checkmate:         
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.is_running = False
@@ -43,6 +43,9 @@ class Game:
             
             pygame.display.update()
         pygame.quit()
+
+        winner = 'white' if chess_board.current_player_color == 'black' else 'black'
+        print(f"Winner is {winner}")
 
 if __name__ == "__main__":
     game = Game()
