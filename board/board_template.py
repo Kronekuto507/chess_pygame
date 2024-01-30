@@ -9,6 +9,7 @@ from classes_pieces.Rook import Rook
 from classes_pieces.Pawn import Pawn
 from .constants import VERDE,ROWS,COLS,SIZE
 
+#Problemas con el jaque: Siempre hay jaquemate incluso si es posible tapar el jaque con una pieza o capturar la pieza
 #Utilizar el método copy() para que compruebe la instancia del tablero en el siguiente turno. Actualizar el tablero real si el movimiento que se va a realizar es posible, de ser el caso que no lo sea, no se actualiza y por lo tanto no se procede al siguiente turno
 class Board:
     
@@ -106,7 +107,7 @@ class Board:
         old_column = 0
         old_row = 0
         self.generate_moves()
-        enemy_pieces = self.get_enemy_pieces()
+        enemy_pieces = self.get_pieces()
         king = self.get_king()
         is_check = self.is_in_check(king,enemy_pieces)
         valid_moves_king = self.get_valid_moves_king(king,enemy_pieces)
@@ -130,15 +131,9 @@ class Board:
                                 piece.deselect()
                                 self.move_counter += 1
                     else:
-                        self.checked_status = True
-                        if isinstance(piece,King) and piece.color == self.current_player_color:
-                                old_column = piece.get_column()
-                                old_row = piece.get_row()
-                                piece.move_piece(x,y,self)
-                                self.moved_piece = piece
-                                piece.deselect()
-                                self.move_counter += 1
-                                self.checked_status = False
+                        if isinstance(piece,Piece) and piece.color == self.current_player_color:
+                            self.checked_status = True
+                            old_column,old_row,piece = self.move_logic_for_check(enemy_pieces,x,y,king,piece)
                         
 
             if self.moved_piece.name == 'pawn' and self.moved_piece.has_promoted():
@@ -223,15 +218,52 @@ class Board:
             return True
         
 
-    def get_enemy_pieces(self):
+    def get_pieces(self,enemy_pieces = True):
         pieces = []
         for row in self.virtual_board:
             for column in row:
-                if isinstance(column,Piece) and column.color != self.current_player_color:
-                    pieces.append(column)
+                if enemy_pieces:
+                    if isinstance(column,Piece) and column.color != self.current_player_color:
+                        pieces.append(column)
+                else:
+                    if isinstance(column,Piece) and column.color == self.current_player_color:
+                        pieces.append(column)
         for piece in pieces:
             print(f"{piece.color} and {piece.name}")
         return pieces
+    
+    def move_logic_for_check(self,enemy_pieces,x,y,king,selected_piece):
+
+        attacking_pieces = []
+        old_column = selected_piece.get_column()
+        old_row = selected_piece.get_row()
+        for piece in enemy_pieces:
+            for move in piece.moves:
+                if move[0] == king.get_row() and move[1] == king.get_column():
+                    attacking_pieces.append(piece)
+
+        aux_piece = selected_piece
+        aux_piece.move_piece(x,y,self)
+        row = aux_piece.get_row()
+        col = aux_piece.get_column()
+
+        if selected_piece.is_selected:
+            if selected_piece.name != 'king':
+                for move in selected_piece.moves:
+                    for attacking_piece in attacking_pieces:
+                        for attacking_move in attacking_piece.moves:
+                            if move == attacking_move or move[0]==attacking_piece.get_row() and move[1] == attacking_piece.get_column():
+                                selected_piece.move_piece(x,y,self)
+            if selected_piece.name == 'king':
+                selected_piece.move_piece(x,y,self)
+        
+        self.moved_piece = selected_piece
+        selected_piece.deselect()
+        self.move_counter += 1
+        self.checked_status = False
+        return old_column,old_row,selected_piece
+
+        
     
     def check_next_turn(self,x,y):
         board_copy_analysis = self.virtual_board.copy()

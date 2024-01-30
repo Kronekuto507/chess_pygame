@@ -5,7 +5,8 @@ from board.constants import WIDTH,HEIGHT,CREMA
 from classes_pieces.Piece import *
 from player.player_class import Player
 
-
+#1. MEJORAR EL SISTEMA DE CAPTURA CUANDO ESTA EN JAQUE
+#2. SOLUCIONAR BUG AL MOVER: SI SE MUEVE CUALQUIER OTRA PIEZA AUN EN JAQUE, ESTO CAMBIA EL JUGADOR ACTUAL QUE TIENE QUE MOVER
 class Game:
     def __init__(self):
         pygame.init()
