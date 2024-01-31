@@ -31,8 +31,6 @@ class Game:
                     elif event.button == 3:
                         x,y = event.pos
                         chess_board.move_piece_on_board(x,y)
-                        if chess_board.checked_status == False:
-                            chess_board.current_player_color = 'black' if chess_board.current_player_color == 'white' else 'white'
             self.screen.fill(CREMA)
             chess_board.draw_board()
             #Si hay una pieza seleccionada, entonces esta muestra las celdas a las que puede ir  
