@@ -107,41 +107,40 @@ class Board:
         old_column = 0
         old_row = 0
         self.generate_moves()
-        enemy_pieces = self.get_pieces()
-        king = self.get_king()
-        is_check = self.is_in_check(king,enemy_pieces)
+        '''
         valid_moves_king = self.get_valid_moves_king(king,enemy_pieces)
         self.virtual_board[king.get_row()][king.get_column()].assign_moves(valid_moves_king)
         self.checkmate = False
         if self.move_counter >= 2:
-            self.checkmate = self.is_checkmate(king,enemy_pieces)
+            self.checkmate = self.is_checkmate(king,enemy_pieces)'''
+        king = self.get_king()
+        enemy_pieces = self.get_pieces()
+        is_check = self.is_in_check(king,enemy_pieces)
+        
 
         if not self.checkmate:
             for row in self.virtual_board:
                 for piece in row:
-                    if not is_check:
-                        if isinstance(piece,Piece) and piece.color == self.current_player_color: #COMPROBAR SI ES EL TURNO DEL JUGADOR
-                            if piece.is_selected:
-                                old_column = piece.get_column()
-                                old_row = piece.get_row()
-                                piece.move_piece(x,y,self)
-                                if piece.name == 'pawn':
-                                    piece.has_moved = True
-                                self.moved_piece = piece
-                                piece.deselect()
-                                self.move_counter += 1
-                    else:
-                        if isinstance(piece,Piece) and piece.color == self.current_player_color:
-                            self.checked_status = True
-                            old_column,old_row,piece = self.move_logic_for_check(enemy_pieces,x,y,king,piece)
+                    if isinstance(piece,Piece) and piece.color == self.current_player_color: #COMPROBAR SI ES EL TURNO DEL JUGADOR
+                        if piece.is_selected:
+                            old_column = piece.get_column()
+                            old_row = piece.get_row()
+                            piece.move_piece(x,y,self)
+                            if piece.name == 'pawn':
+                                piece.has_moved = True
+                            self.moved_piece = piece
+                            piece.deselect()
+                            self.move_counter += 1
                         
-
             if self.moved_piece.name == 'pawn' and self.moved_piece.has_promoted():
                 self.promote(self.moved_piece,old_row,old_column)
 
             elif self.moved_piece.name in ('pawn','rook','queen','king','knight','bishop'):
                 self.update_board_status(old_row,old_column,self.moved_piece.get_column(),self.moved_piece.get_row(),self.moved_piece)
         
+        print("ESPACIO NUEVO \n \n")
+
+        self.print_board()
                      
         
     def generate_moves(self):
@@ -164,7 +163,8 @@ class Board:
 
         self.virtual_board[row][column] = 0
         self.virtual_board[new_row][new_column] = piece
-        self.virtual_board[new_row][new_column].calc_pos()
+        
+
 
     def castle(self,king):
         king_side_pos = 6
@@ -217,52 +217,18 @@ class Board:
         if king.moves:
             return True
         
-
-    def get_pieces(self,enemy_pieces = True):
+    def get_pieces(self):
         pieces = []
         for row in self.virtual_board:
             for column in row:
-                if enemy_pieces:
-                    if isinstance(column,Piece) and column.color != self.current_player_color:
-                        pieces.append(column)
-                else:
-                    if isinstance(column,Piece) and column.color == self.current_player_color:
+                if isinstance(column,Piece) and column.color != self.current_player_color:
                         pieces.append(column)
         for piece in pieces:
             print(f"{piece.color} and {piece.name}")
         return pieces
-    
-    def move_logic_for_check(self,enemy_pieces,x,y,king,selected_piece):
 
-        attacking_pieces = []
-        old_column = selected_piece.get_column()
-        old_row = selected_piece.get_row()
-        for piece in enemy_pieces:
-            for move in piece.moves:
-                if move[0] == king.get_row() and move[1] == king.get_column():
-                    attacking_pieces.append(piece)
-
-        aux_piece = selected_piece
-        aux_piece.move_piece(x,y,self)
-        row = aux_piece.get_row()
-        col = aux_piece.get_column()
-
-        if selected_piece.is_selected:
-            if selected_piece.name != 'king':
-                for move in selected_piece.moves:
-                    for attacking_piece in attacking_pieces:
-                        for attacking_move in attacking_piece.moves:
-                            if move == attacking_move or move[0]==attacking_piece.get_row() and move[1] == attacking_piece.get_column():
-                                selected_piece.move_piece(x,y,self)
-            if selected_piece.name == 'king':
-                selected_piece.move_piece(x,y,self)
-        
-        self.moved_piece = selected_piece
-        selected_piece.deselect()
-        self.move_counter += 1
-        self.checked_status = False
-        return old_column,old_row,selected_piece
-
+    def is_in_check_after_move(self,king,attacking_pieces):
+        return self.is_in_check(king,attacking_pieces)
         
     
     def check_next_turn(self,x,y):
@@ -286,6 +252,28 @@ class Board:
                     if move == piece_move:
                         valid_moves.remove(move)
         return valid_moves
+    
+    def print_board(self):
+        for row in self.virtual_board:
+            print(row)
+    
+    def set_virtual_board(self,matrix):
+        virtual_board = []
+        for row in matrix:
+            virtual_board.append(row)
+        self.virtual_board = virtual_board
+    
+    def create_copy(self):
+        board_copy = Board(self.screen,self.white_player,self.black_player)
+        for row in range(ROWS):
+            row_to_append = []
+            for col in range(COLS):
+                row_to_append.append(self.virtual_board[row][col])
+            board_copy.virtual_board.append(row_to_append)
+        return board_copy
+
+
+
 
 
 
