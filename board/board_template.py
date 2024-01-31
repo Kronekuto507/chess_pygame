@@ -226,23 +226,6 @@ class Board:
         for piece in pieces:
             print(f"{piece.color} and {piece.name}")
         return pieces
-
-    def is_in_check_after_move(self,king,attacking_pieces):
-        return self.is_in_check(king,attacking_pieces)
-        
-    
-    def check_next_turn(self,x,y):
-        board_copy_analysis = self.virtual_board.copy()
-        for row in board_copy_analysis:
-            for piece in row:
-                #if not self.is_in_check(king,enemy_pieces):
-                if isinstance(piece,Piece) and piece.color == self.current_player_color: #COMPROBAR SI ES EL TURNO DEL JUGADOR
-                    if piece.is_selected:
-                        piece.move_piece(x,y,self)
-                        if piece.name == 'pawn':
-                            piece.has_moved = True
-                        piece.deselect()
-        return board_copy_analysis
     
     def get_valid_moves_king(self,king,enemy_pieces): #HAY UN BUG CON EL PEON
         valid_moves = king.moves
@@ -256,12 +239,6 @@ class Board:
     def print_board(self):
         for row in self.virtual_board:
             print(row)
-    
-    def set_virtual_board(self,matrix):
-        virtual_board = []
-        for row in matrix:
-            virtual_board.append(row)
-        self.virtual_board = virtual_board
     
     def create_copy(self):
         board_copy = Board(self.screen,self.white_player,self.black_player)
