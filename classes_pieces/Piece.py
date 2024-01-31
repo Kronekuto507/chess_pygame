@@ -2,7 +2,7 @@ import pygame
 from pygame.locals import *
 from pathlib import Path
 from board.constants import *
-import math
+import copy
 class Piece:
     def __init__(self, color, surface,row,col):
         self.surface= surface
@@ -55,9 +55,46 @@ class Piece:
     def get_starting_square_coordinates(self):
         return (self.get_row(),self.get_column())
     
+    def is_legal_move(self,x,y,board):
+        row,col = self.get_new_coordinates(x,y)
+        #Almacenar tablero en una nueva variable para luego hacer los calculos de validación del movimiento
+        board_copy = board.create_copy()
+        board_copy.generate_moves()
+        #Se iguala la pieza actual en el tablero a una nueva referencia
+        piece_sample = board_copy.virtual_board[self.get_row()][self.get_column()]
+        king = board_copy.get_king()
+        enemy_pieces = board_copy.get_pieces()
+        new_destination = (row,col)
+
+        board_copy.print_board()
+        #Mover pieza de forma virtual
+        board_copy.update_board_status(row = self.get_row(),column = self.get_column(),new_column = new_destination[1],new_row = new_destination[0],piece = piece_sample)
+        print("ESPACIO \n \n")
+
+        board_copy.print_board()
+        is_in_check = board_copy.is_in_check(king,enemy_pieces)
+
+        print("ESPACIO TABLERO ORIGINAL \n \n")
+
+        board.print_board()
+
+        if not board.checked_status:
+            if is_in_check and (new_destination in self.moves):
+                return False
+            if new_destination in self.moves:
+               return True
+        else:
+            for piece in enemy_pieces:
+                for move in piece.moves:
+                    if new_destination == move:
+                        board.checked_status = False
+                        return True
+            
+        return False
+
     def move_piece(self, x, y,board):
         
-        if self.is_selected:
+        if self.is_legal_move(x,y,board):
             new_x,new_y = self.get_new_coordinates(x,y) 
             for move in self.moves:
                 if new_x == move[0] and new_y == move[1]:
@@ -74,6 +111,11 @@ class Piece:
             
             if self.name == 'pawn' and self.promo_rank == self.row:
                 self.promoted = True
+            board.current_player_color = 'black' if board.current_player_color == 'white' else 'white'
+            self.calc_pos()
+        else:
+            print("Try again")
+            
                     
                     
 
@@ -105,5 +147,6 @@ class Piece:
     
     def assign_moves(self,moves):
         self.moves = moves
+
 
 
