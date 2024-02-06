@@ -16,6 +16,7 @@ class Piece:
         self.is_selected = False
         self.moves = []
         self.calc_pos()
+        self.true_moves = []
         
     
     def calc_pos(self):
@@ -40,8 +41,6 @@ class Piece:
         calc_x,calc_y = mouse_x >= self.pos_x and mouse_x <= self.pos_x + SIZE, mouse_y >= self.pos_y and mouse_y <= self.pos_y + SIZE
         if calc_x and calc_y:
             self.is_selected = True
-            print(f'{calc_x,},{calc_y} ')
-            print(f"{self.name}")
     
     def deselect(self):
         self.is_selected = False
@@ -56,47 +55,52 @@ class Piece:
         return (self.get_row(),self.get_column())
     
     def is_legal_move(self,x,y,board):
+        old_row = self.get_row()
+        old_column = self.get_column()
+        old_piece = self
         row,col = self.get_new_coordinates(x,y)
         #Almacenar tablero en una nueva variable para luego hacer los calculos de validación del movimiento
         board_copy = board.create_copy()
         board_copy.generate_moves()
+        moves = self.moves
         #Se iguala la pieza actual en el tablero a una nueva referencia
         piece_sample = board_copy.virtual_board[self.get_row()][self.get_column()]
-        king = board_copy.get_king()
         enemy_pieces = board_copy.get_pieces()
         new_destination = (row,col)
 
         board_copy.print_board()
         #Mover pieza de forma virtual
-        board_copy.update_board_status(row = self.get_row(),column = self.get_column(),new_column = new_destination[1],new_row = new_destination[0],piece = piece_sample)
-        print("ESPACIO \n \n")
-
+        board_copy.update_board_status(row = self.get_row(),column = self.get_column(),new_column = col,new_row = row,piece = piece_sample)
+        print("board_copy board")
         board_copy.print_board()
-        is_in_check = board_copy.is_in_check(king,enemy_pieces)
-
-        print("ESPACIO TABLERO ORIGINAL \n \n")
-
-        board.print_board()
+        king = board.get_king()
+        is_in_check = board_copy.validate_if_check_after_move(king)
 
         if not board.checked_status:
-            if is_in_check and (new_destination in self.moves):
+            if is_in_check and new_destination in moves:
+                
+                board.virtual_board[old_row][old_column] = self
+                self.row = old_row
+                self.col = old_column
+                self.true_moves = moves
                 return False
-            if new_destination in self.moves:
+            if new_destination in moves:
+               self.true_moves= moves
                return True
         else:
-            for piece in enemy_pieces:
-                for move in piece.moves:
-                    if new_destination == move:
-                        board.checked_status = False
-                        return True
-            
+            if is_in_check and new_destination in moves:
+                return False
+            elif not is_in_check and new_destination in moves:
+                board.checked_status = False
+                self.true_moves = moves
+                return True
         return False
 
-    def move_piece(self, x, y,board):
-        
+    def move_piece(self, x, y,old_column,old_row,board):
+        piece_move_sound = pygame.mixer.Sound(r"C:\Users\aaron\Desktop\Programacion\Python\ajedrez\sounds\move-self.mp3")
         if self.is_legal_move(x,y,board):
             new_x,new_y = self.get_new_coordinates(x,y) 
-            for move in self.moves:
+            for move in self.true_moves:
                 if new_x == move[0] and new_y == move[1]:
                     self.row = new_x
                     self.col = new_y
@@ -109,12 +113,23 @@ class Piece:
             if self.name == 'rook':
                 self.has_moved = True
             
-            if self.name == 'pawn' and self.promo_rank == self.row:
-                self.promoted = True
-            board.current_player_color = 'black' if board.current_player_color == 'white' else 'white'
+            if self.name == 'pawn':
+                self.has_moved = True
+                if self.promo_rank == self.row:
+                    self.promoted = True
+
+            board.moved_piece = self
+            self.deselect()
             self.calc_pos()
+            if board.moved_piece.name == 'pawn' and board.moved_piece.has_promoted():
+                board.promote(self.moved_piece,old_row,old_column)
+
+            elif board.moved_piece.name in ('pawn','rook','queen','king','knight','bishop'):
+                board.update_board_status(old_row,old_column,board.moved_piece.get_column(),board.moved_piece.get_row(),board.moved_piece)
+            piece_move_sound.play()
+            board.current_player_color = 'black' if board.current_player_color == 'white' else 'white'
         else:
-            print("Try again")
+            self.deselect()
             
                     
                     
