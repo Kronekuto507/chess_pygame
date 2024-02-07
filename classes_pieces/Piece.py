@@ -57,7 +57,6 @@ class Piece:
     def is_legal_move(self,x,y,board):
         old_row = self.get_row()
         old_column = self.get_column()
-        old_piece = self
         row,col = self.get_new_coordinates(x,y)
         #Almacenar tablero en una nueva variable para luego hacer los calculos de validación del movimiento
         board_copy = board.create_copy()
@@ -75,26 +74,41 @@ class Piece:
         king = board.get_king()
         is_in_check = board_copy.validate_if_check_after_move(king)
 
+        def detect_if_false(board,old_column,old_row):
+            board.virtual_board[old_row][old_column] = self
+            self.row = old_row
+            self.col = old_column
+            self.true_moves = moves
+
         if not board.checked_status:
+
             if is_in_check and new_destination in moves:
-                board.virtual_board[old_row][old_column] = self
-                self.row = old_row
-                self.col = old_column
-                self.true_moves = moves
+                detect_if_false(board,old_column,old_row)
                 return False
+            
             if new_destination in moves:
                self.true_moves= moves
+               square = board.virtual_board[new_destination[0]][new_destination[1]]
+               if isinstance(square,Piece) and board.is_ally_piece(self,square):
+                   detect_if_false(board,old_column,old_row)
+                   return False
+               
                return True
+               
         else:
+
             if not is_in_check and new_destination in moves:
                 board.checked_status = False
                 self.true_moves = moves
+        
+                if isinstance(square,Piece) and board.is_ally_piece(self,square):
+                   detect_if_false(board,old_column,old_row)
+                   return False
+                
                 return True
+            
             elif is_in_check and new_destination in moves:
-                board.virtual_board[old_row][old_column] = self
-                self.row = old_row
-                self.col = old_column
-                self.true_moves = moves
+                detect_if_false(board,old_column,old_row)
                 return False
         return False
 
@@ -130,20 +144,41 @@ class Piece:
                 board.update_board_status(old_row,old_column,board.moved_piece.get_column(),board.moved_piece.get_row(),board.moved_piece)
             piece_move_sound.play()
             board.current_player_color = 'black' if board.current_player_color == 'white' else 'white'
+
             board.generate_moves()
+
+            #Comprobar si está en jaque el rey luego de haber movido
+            king = board.get_king()
+            enemy_pieces = board.get_pieces()
+            ally_pieces = board.get_pieces(get_ally_pieces = True)
+            ally_moves = board.get_moves(ally_pieces
+                                         )
+            valid_moves_king = board.get_valid_moves_king(king,enemy_pieces)
+            board.virtual_board[king.get_row()][king.get_column()].assign_moves(valid_moves_king)
+            is_check,enemy_moves = board.is_in_check(king,enemy_pieces)
+            board.checkmate = board.is_checkmate(king,enemy_moves,ally_moves)
         else:
             self.deselect()
             board.generate_moves()
             
                     
-    def show_squares(self):
+    def show_squares(self,board):
 
         transparent_surface = pygame.Surface((SIZE,SIZE),pygame.SRCALPHA)
         alpha_value = 100
         green_with_alpha = TRANSPARENT_GREEN + (alpha_value,)
 
+        showable_moves = self.moves
+        for row in board.virtual_board:
+            for column in row:
+                if isinstance(column,Piece) and board.is_ally_piece(self,column):
+                    for move in self.moves:
+                        if move[0] == column.get_row() and move[1] == column.get_column():
+                            showable_moves.remove(move)
+
+
         transparent_surface.fill(green_with_alpha)
-        for move in self.moves:
+        for move in showable_moves:
             coord_x,coord_y = SIZE*move[1],SIZE*move[0]
             self.surface.blit(transparent_surface,(coord_x,coord_y))
         
