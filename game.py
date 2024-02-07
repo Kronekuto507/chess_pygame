@@ -20,7 +20,7 @@ class Game:
         chess_board.create_virtual_board()
         chess_board.generate_moves()
 
-        while self.is_running and not chess_board.checkmate:         
+        while self.is_running:         
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.is_running = False
@@ -31,6 +31,9 @@ class Game:
                     elif event.button == 3:
                         x,y = event.pos
                         chess_board.move_piece_on_board(x,y)
+            
+            if chess_board.checkmate:
+                break
             self.screen.fill(CREMA)
             chess_board.draw_board()
             #Si hay una pieza seleccionada, entonces esta muestra las celdas a las que puede ir  
@@ -38,7 +41,7 @@ class Game:
                 for piece in row:
                     if isinstance(piece,Piece):
                         if piece.is_selected:
-                            piece.show_squares()
+                            piece.show_squares(chess_board)
             
             pygame.display.update()
         pygame.quit()
