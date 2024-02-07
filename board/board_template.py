@@ -227,7 +227,7 @@ class Board:
                             pieces.append(column)
         return pieces
     
-    def get_valid_moves_king(self,king,enemy_pieces): #HAY UN BUG CON EL PEON
+    def get_valid_moves_king(self,king,enemy_pieces): 
         valid_moves = king.moves
         for piece in enemy_pieces:
             for move in king.moves:
