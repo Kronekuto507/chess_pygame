@@ -10,7 +10,7 @@ class Pawn(Piece):
         self.has_moved = False
         self.promo_rank = 0 if self.color == 'white' else 7
         self.promoted = False
-    
+        self.attacking_squares = []
     def generate_moves(self,board):
         moves = []
         step = 1 if self.color == "black" else -1
@@ -35,6 +35,7 @@ class Pawn(Piece):
                 if row >= 0 and row <= 7 and col>=0 and col <= 7:
                     if isinstance(board.virtual_board[row][col],Piece) and not board.is_ally_piece(self,board.virtual_board[row][col]):
                         moves.append((row,col))
+                    self.attacking_squares.append((row,col))
 
         return moves
     
