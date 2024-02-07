@@ -27,6 +27,7 @@ class Board:
         self.move_counter = 0
         self.checkmate = False
         b_starter_row = 0
+        self.board_start_game = 0
         self.b_array = [Rook('black',screen,b_starter_row,0),Knight('black',screen,b_starter_row,1)
                    ,Bishop('black',screen,b_starter_row,2),Queen('black',screen,b_starter_row,3),King('black',screen,b_starter_row,4)
                     ,Bishop('black',screen,b_starter_row,5),Knight('black',screen,b_starter_row,6),Rook('black',screen,b_starter_row,7)]
@@ -38,7 +39,7 @@ class Board:
     
     def draw_cell(self,surface,color,x,y):
         pygame.draw.rect(surface,color,(x,y,SIZE,SIZE))
-
+    
     def draw_board(self):
         
         for row in range(0,ROWS):
@@ -85,7 +86,7 @@ class Board:
             return piece_arg.generate_moves(self.virtual_board)
         
     def is_ally_piece(self,main_piece,other_piece):
-        return True if main_piece.color == other_piece.color else False
+        return True if main_piece.color == other_piece.color and isinstance(other_piece,Piece) else False
                 
     
     def select_piece_on_board(self,x,y):
@@ -95,9 +96,11 @@ class Board:
                     if self.selected_piece is None: #Se detecta si no existe ya un objeto seleccionado, de ser el caso, seleccionar directamente
                         piece.select_piece(x,y)
                         self.selected_piece = piece
+                        
                     else: #Si ya hay un objeto, este 
                         selected_row = piece.get_row()
                         selected_col = piece.get_column()
+                    
                         self.virtual_board[selected_row][selected_col].deselect()
                         piece.select_piece(x,y)
                         self.selected_piece = piece
@@ -106,17 +109,10 @@ class Board:
         
         old_column = 0
         old_row = 0
-        self.generate_moves()
-        '''
-        valid_moves_king = self.get_valid_moves_king(king,enemy_pieces)
-        self.virtual_board[king.get_row()][king.get_column()].assign_moves(valid_moves_king)
-        self.checkmate = False
-        if self.move_counter >= 2:
-            self.checkmate = self.is_checkmate(king,enemy_pieces)'''
-        king = self.get_king()
-        enemy_pieces = self.get_pieces()
-        is_check = self.is_in_check(king,enemy_pieces)
-        
+
+        if self.board_start_game == 0:
+            self.generate_moves()
+            self.board_start_game += 1
 
         if not self.checkmate:
             for row in self.virtual_board:
@@ -125,22 +121,7 @@ class Board:
                         if piece.is_selected:
                             old_column = piece.get_column()
                             old_row = piece.get_row()
-                            piece.move_piece(x,y,self)
-                            if piece.name == 'pawn':
-                                piece.has_moved = True
-                            self.moved_piece = piece
-                            piece.deselect()
-                            self.move_counter += 1
-                        
-            if self.moved_piece.name == 'pawn' and self.moved_piece.has_promoted():
-                self.promote(self.moved_piece,old_row,old_column)
-
-            elif self.moved_piece.name in ('pawn','rook','queen','king','knight','bishop'):
-                self.update_board_status(old_row,old_column,self.moved_piece.get_column(),self.moved_piece.get_row(),self.moved_piece)
-        
-        print("ESPACIO NUEVO \n \n")
-
-        self.print_board()
+                            piece.move_piece(x,y,old_column,old_row,self)
                      
         
     def generate_moves(self):
@@ -150,20 +131,21 @@ class Board:
                 if isinstance(element,valid_types)  and hasattr(element,"generate_moves"):
                     moves = element.generate_moves(self)
                     element.assign_moves(moves)
+                    
 
     def update_board_status(self,row,column,new_column,new_row,piece):
 
         piece_capture_sound = pygame.mixer.Sound(r"C:\Users\aaron\Desktop\Programacion\Python\ajedrez\sounds\capture.mp3")
-        piece_move_sound = pygame.mixer.Sound(r"C:\Users\aaron\Desktop\Programacion\Python\ajedrez\sounds\move-self.mp3")
+        
 
-        if isinstance(self.virtual_board[new_row][new_column],int):
-            piece_move_sound.play()
-        elif not self.is_ally_piece(self.virtual_board[row][column],self.virtual_board[new_row][new_column]):
+        if isinstance(self.virtual_board[new_row][new_column],Piece) and not self.is_ally_piece(self.virtual_board[row][column],self.virtual_board[new_row][new_column]):
             piece_capture_sound.play()
 
         self.virtual_board[row][column] = 0
         self.virtual_board[new_row][new_column] = piece
-        
+        self.virtual_board[new_row][new_column].row = new_row
+        self.virtual_board[new_row][new_column].col = new_column  
+
 
 
     def castle(self,king):
@@ -194,14 +176,19 @@ class Board:
         new_queen.create_image()
 
     def is_in_check(self,king,pieces):
+        attacking_moves = []
+
         for piece in pieces:
             for move in piece.moves:
                 if move[0] == king.get_row() and move[1] == king.get_column():
                     self.checked_status = True
-                    return self.checked_status
-                
+                    attacking_moves.extend(piece.moves)
+                    break
+
+        if self.checked_status:
+            return self.checked_status,attacking_moves
         self.checked_status = False
-        return self.checked_status
+        return self.checked_status,attacking_moves
     
     def get_king(self):
         for row in self.virtual_board:
@@ -210,21 +197,34 @@ class Board:
                     return piece
 
 
-    def is_checkmate(self,king,pieces):
-        if not self.is_in_check(king,pieces):
+    def is_checkmate(self,king,enemy_moves,ally_moves):
+        if not self.checked_status:
             return False
-        
-        if king.moves:
+        raise_flag = False
+        for enemy_move in enemy_moves:
+            if enemy_move in ally_moves:
+                raise_flag = True
+                
+        if king.moves and not raise_flag:
             return True
+        return False
+    
+    def get_moves(self,pieces):
+        moves = []
+        for piece in pieces:
+            moves.extend(piece.moves)
+        return moves
         
-    def get_pieces(self):
+    def get_pieces(self,get_ally_pieces = False):
         pieces = []
         for row in self.virtual_board:
             for column in row:
-                if isinstance(column,Piece) and column.color != self.current_player_color:
-                        pieces.append(column)
-        for piece in pieces:
-            print(f"{piece.color} and {piece.name}")
+                if not get_ally_pieces:
+                    if isinstance(column,Piece) and column.color != self.current_player_color:
+                            pieces.append(column)
+                else:
+                    if isinstance(column,Piece) and column.color == self.current_player_color:
+                            pieces.append(column)
         return pieces
     
     def get_valid_moves_king(self,king,enemy_pieces): #HAY UN BUG CON EL PEON
@@ -234,6 +234,10 @@ class Board:
                 for piece_move in piece.moves:
                     if move == piece_move:
                         valid_moves.remove(move)
+                    if piece.name == 'pawn':
+                        for attacking_square in piece.attacking_squares:
+                            if move == attacking_square:
+                                valid_moves.remove(move)
         return valid_moves
     
     def print_board(self):
@@ -247,7 +251,14 @@ class Board:
             for col in range(COLS):
                 row_to_append.append(self.virtual_board[row][col])
             board_copy.virtual_board.append(row_to_append)
+        board_copy.current_player_color = self.current_player_color
         return board_copy
+    
+    def validate_if_check_after_move(self,king):
+        copy = self.create_copy()
+        copy.generate_moves()
+        check_status,moves = copy.is_in_check(king,copy.get_pieces())
+        return check_status
 
 
 
