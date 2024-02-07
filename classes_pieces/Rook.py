@@ -30,9 +30,6 @@ class Rook(Piece):
                 else:
                     if row != self.row:
                         if isinstance(board.virtual_board[row][self.col],Piece):
-                            if board.is_ally_piece(self,board.virtual_board[row][self.col]):
-                                break
-                            else:
                                 array_move.append((row,self.col))
                                 break
         else:
@@ -42,9 +39,6 @@ class Rook(Piece):
                 else:
                     if col != self.col:
                         if isinstance(board.virtual_board[self.row][col],Piece):
-                            if board.is_ally_piece(self,board.virtual_board[self.row][col]):
-                                break
-                            else:
                                 array_move.append((self.row,col))
                                 break
         return array_move
