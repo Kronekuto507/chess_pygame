@@ -65,7 +65,6 @@ class Piece:
         moves = self.moves
         #Se iguala la pieza actual en el tablero a una nueva referencia
         piece_sample = board_copy.virtual_board[self.get_row()][self.get_column()]
-        enemy_pieces = board_copy.get_pieces()
         new_destination = (row,col)
 
         board_copy.print_board()
@@ -78,7 +77,6 @@ class Piece:
 
         if not board.checked_status:
             if is_in_check and new_destination in moves:
-                
                 board.virtual_board[old_row][old_column] = self
                 self.row = old_row
                 self.col = old_column
@@ -88,12 +86,16 @@ class Piece:
                self.true_moves= moves
                return True
         else:
-            if is_in_check and new_destination in moves:
-                return False
-            elif not is_in_check and new_destination in moves:
+            if not is_in_check and new_destination in moves:
                 board.checked_status = False
                 self.true_moves = moves
                 return True
+            elif is_in_check and new_destination in moves:
+                board.virtual_board[old_row][old_column] = self
+                self.row = old_row
+                self.col = old_column
+                self.true_moves = moves
+                return False
         return False
 
     def move_piece(self, x, y,old_column,old_row,board):
@@ -128,13 +130,12 @@ class Piece:
                 board.update_board_status(old_row,old_column,board.moved_piece.get_column(),board.moved_piece.get_row(),board.moved_piece)
             piece_move_sound.play()
             board.current_player_color = 'black' if board.current_player_color == 'white' else 'white'
+            board.generate_moves()
         else:
             self.deselect()
+            board.generate_moves()
             
                     
-                    
-
-
     def show_squares(self):
 
         transparent_surface = pygame.Surface((SIZE,SIZE),pygame.SRCALPHA)
