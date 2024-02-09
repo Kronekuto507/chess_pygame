@@ -27,6 +27,9 @@ class Board:
         self.move_counter = 0
         self.checkmate = False
         b_starter_row = 0
+
+        self.current_king = None
+        self.current_enemy_pieces = None
         self.board_start_game = 0
         self.b_array = [Rook('black',screen,b_starter_row,0),Knight('black',screen,b_starter_row,1)
                    ,Bishop('black',screen,b_starter_row,2),Queen('black',screen,b_starter_row,3),King('black',screen,b_starter_row,4)
@@ -131,15 +134,16 @@ class Board:
                 if isinstance(element,valid_types)  and hasattr(element,"generate_moves"):
                     moves = element.generate_moves(self)
                     element.assign_moves(moves)
+    
+    def assign_legal_moves(self):
+        for row in self.virtual_board:
+            for element in row:
+                if isinstance(element,Piece):
+                    legal_moves = element.make_legal_moves(self)
+                    element.assign_moves(legal_moves)
                     
 
     def update_board_status(self,row,column,new_column,new_row,piece):
-
-        piece_capture_sound = pygame.mixer.Sound(r"C:\Users\aaron\Desktop\Programacion\Python\ajedrez\sounds\capture.mp3")
-        
-
-        if isinstance(self.virtual_board[new_row][new_column],Piece) and not self.is_ally_piece(self.virtual_board[row][column],self.virtual_board[new_row][new_column]):
-            piece_capture_sound.play()
 
         self.virtual_board[row][column] = 0
         self.virtual_board[new_row][new_column] = piece
@@ -176,19 +180,17 @@ class Board:
         new_queen.create_image()
 
     def is_in_check(self,king,pieces):
-        attacking_moves = []
-
         for piece in pieces:
             for move in piece.moves:
                 if move[0] == king.get_row() and move[1] == king.get_column():
                     self.checked_status = True
-                    attacking_moves.extend(piece.moves)
+
                     break
 
         if self.checked_status:
-            return self.checked_status,attacking_moves
+            return self.checked_status
         self.checked_status = False
-        return self.checked_status,attacking_moves
+        return self.checked_status
     
     def get_king(self):
         for row in self.virtual_board:
@@ -197,17 +199,22 @@ class Board:
                     return piece
 
 
-    def is_checkmate(self,king,enemy_moves,ally_moves):
-        if not self.checked_status:
+    def is_checkmate(self,king,enemy_pieces,ally_pieces):
+        if not self.is_in_check(king,enemy_pieces):
             return False
-        raise_flag = False
-        for enemy_move in enemy_moves:
-            if enemy_move in ally_moves:
-                raise_flag = True
+        if king.moves:
+            return False
+        
+        for piece in ally_pieces:
+            legal_moves = piece.get_legal_moves(self)
+            for move in legal_moves:
+                board_instance = self.simulate_move(piece,move)
+                if not board_instance.is_in_check(king,enemy_pieces):
+                    return False
                 
-        if king.moves and not raise_flag:
             return True
         return False
+
     
     def get_moves(self,pieces):
         moves = []
@@ -228,17 +235,14 @@ class Board:
         return pieces
     
     def get_valid_moves_king(self,king,enemy_pieces): 
-        valid_moves = king.moves
-        for piece in enemy_pieces:
-            for move in king.moves:
-                for piece_move in piece.moves:
-                    if move == piece_move:
-                        valid_moves.remove(move)
-                    if piece.name == 'pawn':
-                        for attacking_square in piece.attacking_squares:
-                            if move == attacking_square:
-                                valid_moves.remove(move)
-        return valid_moves
+        valid_moves = king.get_legal_moves(self)
+        legal_moves = king.get_legal_moves(self)
+
+        for move in valid_moves:
+            is_instance = self.simulate_move(king,move)
+            if is_instance.is_in_check(king,enemy_pieces):
+                legal_moves.remove(move)
+        return legal_moves
     
     def print_board(self):
         for row in self.virtual_board:
@@ -254,11 +258,32 @@ class Board:
         board_copy.current_player_color = self.current_player_color
         return board_copy
     
+    def new_copy(self):
+        board_copy = Board(self.screen,self.white_player,self.black_player)
+
+        for row in self.virtual_board:
+            row_to_append = []
+            for cell in row:
+                if isinstance(cell,Piece):
+                    copy  = cell.clone()
+                    row_to_append.append(copy)
+                else:
+                    row_to_append.append(0)
+            board_copy.virtual_board.append(row_to_append)
+        board_copy.current_player_color = self.current_player_color
+        return board_copy
+    
     def validate_if_check_after_move(self,king):
         copy = self.create_copy()
         copy.generate_moves()
-        check_status,moves = copy.is_in_check(king,copy.get_pieces())
+        check_status = copy.is_in_check(king,copy.get_pieces())
         return check_status
+    
+    def simulate_move(self,piece,move):
+        instance = self.create_copy()
+        instance.update_board_status(row=piece.get_row(),column=piece.get_column(),new_column=move[1],new_row=move[0],piece=piece)
+        instance.generate_moves()
+        return instance
 
 
 

@@ -17,3 +17,6 @@ class Queen(Piece):
         moves.extend(rook_instance.generate_moves(board))
         moves.extend(bishop_instance.generate_moves(board))
         return moves
+    
+    def clone(self):
+        return Queen(self.color,self.surface,self.row,self.col)

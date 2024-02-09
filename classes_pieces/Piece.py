@@ -53,6 +53,7 @@ class Piece:
     
     def get_starting_square_coordinates(self):
         return (self.get_row(),self.get_column())
+
     
     def is_legal_move(self,x,y,board):
         old_row = self.get_row()
@@ -87,20 +88,19 @@ class Piece:
                 return False
             
             if new_destination in moves:
-               self.true_moves= moves
-               square = board.virtual_board[new_destination[0]][new_destination[1]]
-               if isinstance(square,Piece) and board.is_ally_piece(self,square):
+                self.true_moves= moves
+                square = board.virtual_board[new_destination[0]][new_destination[1]]
+                if isinstance(square,Piece) and board.is_ally_piece(self,square):
                    detect_if_false(board,old_column,old_row)
                    return False
                
-               return True
+                return True
                
         else:
-
             if not is_in_check and new_destination in moves:
                 board.checked_status = False
                 self.true_moves = moves
-        
+                square = board.virtual_board[new_destination[0]][new_destination[1]]
                 if isinstance(square,Piece) and board.is_ally_piece(self,square):
                    detect_if_false(board,old_column,old_row)
                    return False
@@ -110,6 +110,9 @@ class Piece:
             elif is_in_check and new_destination in moves:
                 detect_if_false(board,old_column,old_row)
                 return False
+        
+        detect_if_false(board,old_column,old_row)
+        self.true_moves = moves
         return False
 
     def move_piece(self, x, y,old_column,old_row,board):
@@ -143,20 +146,26 @@ class Piece:
             elif board.moved_piece.name in ('pawn','rook','queen','king','knight','bishop'):
                 board.update_board_status(old_row,old_column,board.moved_piece.get_column(),board.moved_piece.get_row(),board.moved_piece)
             piece_move_sound.play()
+            
             board.current_player_color = 'black' if board.current_player_color == 'white' else 'white'
 
+            board.print_board() 
+        
             board.generate_moves()
 
             #Comprobar si está en jaque el rey luego de haber movido
-            king = board.get_king()
-            enemy_pieces = board.get_pieces()
-            ally_pieces = board.get_pieces(get_ally_pieces = True)
-            ally_moves = board.get_moves(ally_pieces
-                                         )
-            valid_moves_king = board.get_valid_moves_king(king,enemy_pieces)
-            board.virtual_board[king.get_row()][king.get_column()].assign_moves(valid_moves_king)
-            is_check,enemy_moves = board.is_in_check(king,enemy_pieces)
-            board.checkmate = board.is_checkmate(king,enemy_moves,ally_moves)
+            
+            board_copy = board.new_copy()
+            print('Despues de obtener al rey:')
+            enemy_pieces = board_copy.get_pieces()
+            king = board_copy.get_king()
+            actual_king = board.get_king()
+
+            ally_pieces = board_copy.get_pieces(get_ally_pieces = True)
+            valid_moves_king = board_copy.get_valid_moves_king(king,enemy_pieces)
+            board.virtual_board[actual_king.get_row()][actual_king.get_column()].assign_moves(valid_moves_king)
+            is_check= board.is_in_check(actual_king,enemy_pieces)
+            board.checkmate = board.is_checkmate(king,enemy_pieces,ally_pieces)
         else:
             self.deselect()
             board.generate_moves()
@@ -198,6 +207,19 @@ class Piece:
     
     def assign_moves(self,moves):
         self.moves = moves
+
+    def get_legal_moves(self,board):
+        possible_moves = self.moves
+
+        for move in self.moves:
+            square = board.virtual_board[move[0]][move[1]]
+            if isinstance(square,Piece) and board.is_ally_piece(self,square):
+                possible_moves.remove(move)
+        
+        return possible_moves
+    
+    def clone(self):
+        pass
 
 
 

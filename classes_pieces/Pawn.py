@@ -41,5 +41,8 @@ class Pawn(Piece):
     
     def has_promoted(self):
         return self.promoted
+    
+    def clone(self):
+        return Pawn(self.color,self.surface,self.row,self.col)
 
                 

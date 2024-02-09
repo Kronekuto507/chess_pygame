@@ -42,3 +42,6 @@ class Rook(Piece):
                                 array_move.append((self.row,col))
                                 break
         return array_move
+    
+    def clone(self):
+        return Rook(self.color,self.surface,self.row,self.col)

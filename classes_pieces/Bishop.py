@@ -40,3 +40,6 @@ class Bishop(Piece):
                                 array_moves.append((row,col))
                                 break
         return array_moves
+    
+    def clone(self):
+        return Bishop(self.color,self.surface,self.row,self.col)

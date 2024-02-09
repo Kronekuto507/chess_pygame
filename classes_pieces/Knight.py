@@ -17,6 +17,9 @@ class Knight(Piece):
                 if isinstance(board.virtual_board[row][col], int) or not board.is_ally_piece(self,board.virtual_board[row][col]):
                     moves.append((row,col))
         return moves
+    
+    def clone(self):
+        return Knight(self.color,self.surface,self.row,self.col)
                     
 
 

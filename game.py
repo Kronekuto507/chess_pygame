@@ -5,8 +5,7 @@ from board.constants import WIDTH,HEIGHT,CREMA
 from classes_pieces.Piece import *
 from player.player_class import Player
 
-#1. MEJORAR EL SISTEMA DE CAPTURA CUANDO ESTA EN JAQUE
-#2. SOLUCIONAR BUG AL MOVER: SI SE MUEVE CUALQUIER OTRA PIEZA AUN EN JAQUE, ESTO CAMBIA EL JUGADOR ACTUAL QUE TIENE QUE MOVER
+#Se han solucionado la mayoría de las cosas. Ahora se debe de detectar si está en jaquemate correctamente. 
 class Game:
     def __init__(self):
         pygame.init()
@@ -31,7 +30,6 @@ class Game:
                     elif event.button == 3:
                         x,y = event.pos
                         chess_board.move_piece_on_board(x,y)
-            
             if chess_board.checkmate:
                 break
             self.screen.fill(CREMA)

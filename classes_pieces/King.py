@@ -22,7 +22,7 @@ class King(Piece):
         for row in range(starter_row,later_row):
             for col in range(starter_col,later_col):
                 if row<= 7 and row >= 0 and col <= 7 and col>= 0:
-                    if isinstance(board.virtual_board[row][col],int) or not board.is_ally_piece(self,board.virtual_board[row][col]):
+                    if isinstance(board.virtual_board[row][col],int):
                         moves.append((row,col))
 
         if not self.has_moved:
@@ -47,7 +47,9 @@ class King(Piece):
             if isinstance(board.virtual_board[self.row][col],Rook):
                 rook_array.append(board.virtual_board[self.row][col])
         return rook_array
-
+    
+    def clone(self):
+        return King(self.color,self.surface,self.row,self.col)
         
     
         
