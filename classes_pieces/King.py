@@ -9,10 +9,9 @@ class King(Piece):
         super().__init__(color, surface, row, col)
         self.name = 'king'
         self.has_moved = False
-        self.is_checked = False
-        self.queen_side_pos = self.col - 2
-        self.king_side_pos = self.col + 2
+        self.can_castle = True
         self.starting_coordinates = (0,4) if self.color == 'black' else (7,4)
+        self.castling_squares = [(self.row,6),(self.row,2)]
 
     def generate_moves(self, board):
         starter_row = self.row - 1
@@ -45,11 +44,10 @@ class King(Piece):
         return valid_moves
     
     def get_rooks(self,board):
-        rook_array = []
-        for col in range(0,COLS):
-            if isinstance(board.virtual_board[self.row][col],Rook):
-                rook_array.append(board.virtual_board[self.row][col])
-        return rook_array
+        pass
+    
+    def can_castle_m(self):
+        return self.can_castle
     
     def clone(self):
         return King(self.color,self.surface,self.row,self.col)
