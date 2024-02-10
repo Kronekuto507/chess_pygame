@@ -152,26 +152,7 @@ class Board:
 
 
 
-    #Enrocar    
-
-    def castle(self,king):
-        king_side_pos = 6
-        queen_side_pos = 2
-
-        def castling_logic(king,column,value = 5):
-            self.virtual_board[king.row][column].col = value #Se asigna la columna nueva a la que se movera la torre
-            rook = self.virtual_board[king.row][column] #Se almacena la torre en una variable auxiliar
-            self.virtual_board[king.row][rook.col] = rook #Se intercambia la posicion del rey y la torre
-            self.virtual_board[king.row][column] = 0 #La posicion de la torre original se actualiza a 0 en el programa
-            
-            self.virtual_board[king.row][rook.col].calc_pos()
-            self.virtual_board[king.row][rook.col].has_moved = True
-
-        if king.col == king_side_pos:
-            castling_logic(king,COLS-1)
-
-        elif king.col == queen_side_pos:
-            castling_logic(king,0,value=3)
+    #Enrocar
     
     def set_current_player_color(self,player_color):
         self.current_player_color = player_color
@@ -186,7 +167,6 @@ class Board:
             for move in piece.moves:
                 if move[0] == king.get_row() and move[1] == king.get_column():
                     self.checked_status = True
-
                     break
 
         if self.checked_status:
@@ -288,6 +268,66 @@ class Board:
         instance.update_board_status(row=piece.get_row(),column=piece.get_column(),new_column=move[1],new_row=move[0],piece=piece)
         instance.generate_moves()
         return instance
+    
+    def check_if_castle(self,king,rook,enemy_pieces):
+
+        if king.has_moved or rook.has_moved:
+            return False
+        if self.is_in_check(king,enemy_pieces):
+            return False
+        
+        adyacent_moves = [(king.get_row(),king.get_column() + 1),(king.get_row(),king.get_column() - 1)]
+        for adyacent_move in adyacent_moves:
+            board = self.new_copy()
+            board_copy_king = board.get_king()
+            instance_simulation = board.simulate_move(board_copy_king,adyacent_move)
+            if instance_simulation.is_in_check(board_copy_king,enemy_pieces):
+                return False
+            
+        king_col = king.get_column()
+        
+        rook_column = rook.get_column()
+
+        king_side_empty = all(isinstance(self.virtual_board[king.get_row()][col], int) for col in range(king_col + 1, king_col + 3))
+        queen_side_empty = all(isinstance(self.virtual_board[king.get_row()][col], int) for col in range(king_col - 1, king_col - 4, -1))
+
+        if rook_column == 7:
+            return king_side_empty
+        if rook_column == 0:
+            return queen_side_empty
+        
+        return False
+    
+    def castle(self,king):
+        king_side_pos = 6
+        queen_side_pos = 2
+
+        def castling_logic(king,column,value = 5):
+            self.virtual_board[king.row][column].col = value #Se asigna la columna nueva a la que se movera la torre
+            rook = self.virtual_board[king.row][column] #Se almacena la torre en una variable auxiliar
+            self.virtual_board[king.row][rook.col] = rook #Se intercambia la posicion del rey y la torre
+            self.virtual_board[king.row][column] = 0 #La posicion de la torre original se actualiza a 0 en el programa
+            
+            self.virtual_board[king.row][rook.col].calc_pos()
+            self.virtual_board[king.row][rook.col].has_moved = True
+
+        if king.col == king_side_pos:
+            castling_logic(king,COLS-1)
+
+        elif king.col == queen_side_pos:
+            castling_logic(king,0,value=3)
+    
+    def get_rooks_for_castling(self,king):
+        rook_array = []
+        for col in range(0,COLS):
+            if isinstance(self.virtual_board[king.row][col],Rook):
+                rook_array.append(self.virtual_board[king.row][col])
+        return rook_array
+
+                
+
+        
+
 
 
 
