@@ -152,6 +152,8 @@ class Board:
 
 
 
+    #Enrocar    
+
     def castle(self,king):
         king_side_pos = 6
         queen_side_pos = 2
@@ -193,10 +195,12 @@ class Board:
         return self.checked_status
     
     def get_king(self):
-        for row in self.virtual_board:
-            for piece in row:
-                if isinstance(piece,King) and self.current_player_color == piece.color:
-                    return piece
+        for row in range(ROWS):
+            for col in range(COLS):
+                if isinstance(self.virtual_board[row][col],King) and self.current_player_color == self.virtual_board[row][col].color:
+                    self.virtual_board[row][col].row = row
+                    self.virtual_board[row][col].col = col
+                    return self.virtual_board[row][col]
 
 
     def is_checkmate(self,king,enemy_pieces,ally_pieces):

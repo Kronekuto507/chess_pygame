@@ -66,12 +66,9 @@ class Piece:
         #Se iguala la pieza actual en el tablero a una nueva referencia
         piece_sample = board_copy.virtual_board[self.get_row()][self.get_column()]
         new_destination = (row,col)
-
-        board_copy.print_board()
         #Mover pieza de forma virtual
         board_copy.update_board_status(row = self.get_row(),column = self.get_column(),new_column = col,new_row = row,piece = piece_sample)
-        print("board_copy board")
-        board_copy.print_board()
+
         king = board.get_king()
         is_in_check = board_copy.validate_if_check_after_move(king)
 
@@ -116,7 +113,10 @@ class Piece:
         return False
 
     def move_piece(self, x, y,old_column,old_row,board):
-        piece_move_sound = pygame.mixer.Sound(r"C:\Users\aaron\Desktop\Programacion\Python\ajedrez\sounds\move-self.mp3")
+
+        capture_sound = pygame.mixer.Sound(r".\sounds\capture.mp3")
+        piece_move_sound = pygame.mixer.Sound(r".\sounds\move-self.mp3")
+
         if self.is_legal_move(x,y,board):
             new_x,new_y = self.get_new_coordinates(x,y) 
             for move in self.true_moves:
@@ -140,32 +140,42 @@ class Piece:
             board.moved_piece = self
             self.deselect()
             self.calc_pos()
+
             if board.moved_piece.name == 'pawn' and board.moved_piece.has_promoted():
                 board.promote(self.moved_piece,old_row,old_column)
 
             elif board.moved_piece.name in ('pawn','rook','queen','king','knight','bishop'):
+                if isinstance(board.virtual_board[old_row][old_column],int):
+                    piece_move_sound.play()
+                elif isinstance(board.virtual_board[old_row][old_column],Piece) and not board.is_ally_piece(self,board.virtual_board[old_row][old_column]):
+                    capture_sound.play()
                 board.update_board_status(old_row,old_column,board.moved_piece.get_column(),board.moved_piece.get_row(),board.moved_piece)
-            piece_move_sound.play()
+            
             
             board.current_player_color = 'black' if board.current_player_color == 'white' else 'white'
-
-            board.print_board() 
         
             board.generate_moves()
 
             #Comprobar si está en jaque el rey luego de haber movido
             
             board_copy = board.new_copy()
-            print('Despues de obtener al rey:')
+            board_copy.generate_moves()
             enemy_pieces = board_copy.get_pieces()
             king = board_copy.get_king()
             actual_king = board.get_king()
 
+            actual_king_row = actual_king.get_row()
+            actual_king_column = actual_king.get_column()
+            print(f"#1 King's color is: {actual_king.color} and its coordinates are: {actual_king.get_starting_square_coordinates()}")
             ally_pieces = board_copy.get_pieces(get_ally_pieces = True)
             valid_moves_king = board_copy.get_valid_moves_king(king,enemy_pieces)
-            board.virtual_board[actual_king.get_row()][actual_king.get_column()].assign_moves(valid_moves_king)
+            board.virtual_board[actual_king_row][actual_king_column].assign_moves(valid_moves_king)
+            print(f"#2 King's color is: {actual_king.color} and its coordinates are: {actual_king.get_starting_square_coordinates()}")
             is_check= board.is_in_check(actual_king,enemy_pieces)
-            board.checkmate = board.is_checkmate(king,enemy_pieces,ally_pieces)
+            print(f"#3 King's color is: {actual_king.color} and its coordinates are: {actual_king.get_starting_square_coordinates()}")
+            board.checkmate = board.is_checkmate(actual_king,enemy_pieces,ally_pieces)
+            print(f"#4 King's color is: {actual_king.color} and its coordinates are: {actual_king.get_starting_square_coordinates()}")
+            
         else:
             self.deselect()
             board.generate_moves()
