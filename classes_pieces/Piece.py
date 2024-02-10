@@ -118,16 +118,27 @@ class Piece:
         piece_move_sound = pygame.mixer.Sound(r".\sounds\move-self.mp3")
 
         if self.is_legal_move(x,y,board):
-            new_x,new_y = self.get_new_coordinates(x,y) 
-            for move in self.true_moves:
-                if new_x == move[0] and new_y == move[1]:
-                    self.row = new_x
-                    self.col = new_y
+            main_board_enemy_pieces = board.get_pieces()
+            new_x,new_y = self.get_new_coordinates(x,y)
+
             if self.name == 'king':
-                if (self.col == self.king_side_pos or self.col == self.queen_side_pos) and not self.has_moved and board.checked_status == False:
-                    board.castle(self)
-                    self.has_moved = True
+                position = (new_x,new_y)
+                rooks = board.get_rooks_for_castling(self)
+                castling_condition = False
+                if position in self.castling_squares:
+                    if int(len(rooks)) > 0:
+                        castling_condition = board.check_if_castle(self,rooks[0],main_board_enemy_pieces)
+                    if int(len(rooks)) > 1:
+                        castling_condition = board.check_if_castle(self,rooks[1],main_board_enemy_pieces)
+                    if castling_condition:
+                        self.row = new_x
+                        self.col = new_y
+                        board.castle(self)
+                        self.has_moved = True
                 self.has_moved = True
+            
+            self.row = new_x
+            self.col = new_y
 
             if self.name == 'rook':
                 self.has_moved = True
@@ -142,12 +153,12 @@ class Piece:
             self.calc_pos()
 
             if board.moved_piece.name == 'pawn' and board.moved_piece.has_promoted():
-                board.promote(self.moved_piece,old_row,old_column)
+                board.promote(board.moved_piece,old_row,old_column)
 
             elif board.moved_piece.name in ('pawn','rook','queen','king','knight','bishop'):
-                if isinstance(board.virtual_board[old_row][old_column],int):
+                if isinstance(board.virtual_board[board.moved_piece.get_row()][board.moved_piece.get_column()],int):
                     piece_move_sound.play()
-                elif isinstance(board.virtual_board[old_row][old_column],Piece) and not board.is_ally_piece(self,board.virtual_board[old_row][old_column]):
+                elif isinstance(board.virtual_board[board.moved_piece.get_row()][board.moved_piece.get_column()],Piece) and not board.is_ally_piece(self,board.virtual_board[board.moved_piece.get_row()][board.moved_piece.get_column()]):
                     capture_sound.play()
                 board.update_board_status(old_row,old_column,board.moved_piece.get_column(),board.moved_piece.get_row(),board.moved_piece)
             
@@ -184,10 +195,34 @@ class Piece:
     def show_squares(self,board):
 
         transparent_surface = pygame.Surface((SIZE,SIZE),pygame.SRCALPHA)
+        special_surface = pygame.Surface((SIZE,SIZE), pygame.SRCALPHA)
+
         alpha_value = 100
+
         green_with_alpha = TRANSPARENT_GREEN + (alpha_value,)
+        blue_with_alpha = TRANSPARENT_BLUE + (alpha_value,)
+    
+        #MOSTRAR CUADROS DEL ENROQUE
+        if self.name == 'king':
+            main_board_enemy_pieces = board.get_pieces()
+            rooks = board.get_rooks_for_castling(self)
+            castling_condition_array = []
+            if int(len(rooks)) > 0:
+                castling_condition_array.append(board.check_if_castle(self,rooks[0],main_board_enemy_pieces))
+            if int(len(rooks)) > 1:
+                castling_condition_array.append(board.check_if_castle(self,rooks[1],main_board_enemy_pieces))
+            if int(len(castling_condition_array)) > 0:
+                special_surface.fill(blue_with_alpha)
+                for rook in rooks:
+                    if rook.col == 7:
+                        coord_x,coord_y = SIZE*self.castling_squares[0][1],SIZE*self.castling_squares[0][0]
+                        self.surface.blit(special_surface,(coord_x,coord_y))
+                    if rook.col == 0:
+                        coord_x,coord_y = SIZE*self.castling_squares[1][1],SIZE*self.castling_squares[1][0]
+                        self.surface.blit(special_surface,(coord_x,coord_y))
 
         showable_moves = self.moves
+        #No mostrar movimientos en donde se resalte una casilla con una pieza aliada
         for row in board.virtual_board:
             for column in row:
                 if isinstance(column,Piece) and board.is_ally_piece(self,column):

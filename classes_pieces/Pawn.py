@@ -43,6 +43,10 @@ class Pawn(Piece):
         return self.promoted
     
     def clone(self):
-        return Pawn(self.color,self.surface,self.row,self.col)
+        new_pawn = Pawn(self.color,self.surface,self.row,self.col)
+        new_pawn.has_moved = self.has_moved
+        new_pawn.promoted = self.promoted
+        new_pawn.attacking_squares = self.attacking_squares
+        return new_pawn
 
                 
