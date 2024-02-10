@@ -9,9 +9,9 @@ class King(Piece):
         super().__init__(color, surface, row, col)
         self.name = 'king'
         self.has_moved = False
-        self.can_castle = True
+        self.can_castle_array = None
         self.starting_coordinates = (0,4) if self.color == 'black' else (7,4)
-        self.castling_squares = [(self.row,6),(self.row,2)]
+        self.castling_squares = {7: (self.row,6), 0: (self.row,2)}
 
     def generate_moves(self, board):
         starter_row = self.row - 1
@@ -50,7 +50,11 @@ class King(Piece):
         return self.can_castle
     
     def clone(self):
-        return King(self.color,self.surface,self.row,self.col)
+
+        king = King(self.color,self.surface,self.row,self.col)
+        king.has_moved = self.has_moved
+        king.can_castle_array = self.can_castle_array
+        return king
         
     
         

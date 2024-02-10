@@ -298,7 +298,7 @@ class Board:
         
         return False
     
-    def castle(self,king):
+    def castle(self,king,column):
         king_side_pos = 6
         queen_side_pos = 2
 
@@ -310,11 +310,13 @@ class Board:
             
             self.virtual_board[king.row][rook.col].calc_pos()
             self.virtual_board[king.row][rook.col].has_moved = True
+            king.has_moved = True
+            king.calc_pos()
 
-        if king.col == king_side_pos:
+        if column == king_side_pos:
             castling_logic(king,COLS-1)
 
-        elif king.col == queen_side_pos:
+        elif column == queen_side_pos:
             castling_logic(king,0,value=3)
     
     def get_rooks_for_castling(self,king):

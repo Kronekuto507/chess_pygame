@@ -80,6 +80,21 @@ class Piece:
 
         if not board.checked_status:
 
+            '''if self.name == 'king':
+                position = (row,col)
+                rooks = board.get_rooks_for_castling(self)
+                main_board_enemy_pieces = board.get_pieces()
+                castling_condition_array = []
+                if int(len(rooks)) > 0:
+                    for rook in rooks:
+                        castling_condition_array.append(board.check_if_castle(self,rook,main_board_enemy_pieces))
+                
+                castling_condition_array = [x for x in castling_condition_array if x == True]
+                for value,condition in zip(self.castling_squares.values(),castling_condition_array):
+                    if position == value and condition:
+                       self.can_castle_array = castling_condition_array
+                       return True'''
+
             if is_in_check and new_destination in moves:
                 detect_if_false(board,old_column,old_row)
                 return False
@@ -118,25 +133,14 @@ class Piece:
         piece_move_sound = pygame.mixer.Sound(r".\sounds\move-self.mp3")
 
         if self.is_legal_move(x,y,board):
-            main_board_enemy_pieces = board.get_pieces()
             new_x,new_y = self.get_new_coordinates(x,y)
-
-            if self.name == 'king':
-                position = (new_x,new_y)
-                rooks = board.get_rooks_for_castling(self)
-                castling_condition = False
-                if position in self.castling_squares:
-                    if int(len(rooks)) > 0:
-                        castling_condition = board.check_if_castle(self,rooks[0],main_board_enemy_pieces)
-                    if int(len(rooks)) > 1:
-                        castling_condition = board.check_if_castle(self,rooks[1],main_board_enemy_pieces)
-                    if castling_condition:
-                        self.row = new_x
-                        self.col = new_y
-                        board.castle(self)
-                        self.has_moved = True
-                self.has_moved = True
             
+            '''if self.name == 'king':
+                if self.can_castle_array != None and int(len(self.can_castle_array)) > 0:
+                    for condition in self.can_castle_array:
+                        if condition:
+                            board.castle(self,new_y)'''
+
             self.row = new_x
             self.col = new_y
 
@@ -167,8 +171,6 @@ class Piece:
         
             board.generate_moves()
 
-            #Comprobar si está en jaque el rey luego de haber movido
-            
             board_copy = board.new_copy()
             board_copy.generate_moves()
             enemy_pieces = board_copy.get_pieces()
@@ -185,6 +187,7 @@ class Piece:
             is_check= board.is_in_check(actual_king,enemy_pieces)
             print(f"#3 King's color is: {actual_king.color} and its coordinates are: {actual_king.get_starting_square_coordinates()}")
             board.checkmate = board.is_checkmate(actual_king,enemy_pieces,ally_pieces)
+            
             print(f"#4 King's color is: {actual_king.color} and its coordinates are: {actual_king.get_starting_square_coordinates()}")
             
         else:
@@ -208,18 +211,16 @@ class Piece:
             rooks = board.get_rooks_for_castling(self)
             castling_condition_array = []
             if int(len(rooks)) > 0:
-                castling_condition_array.append(board.check_if_castle(self,rooks[0],main_board_enemy_pieces))
-            if int(len(rooks)) > 1:
-                castling_condition_array.append(board.check_if_castle(self,rooks[1],main_board_enemy_pieces))
-            if int(len(castling_condition_array)) > 0:
-                special_surface.fill(blue_with_alpha)
                 for rook in rooks:
-                    if rook.col == 7:
-                        coord_x,coord_y = SIZE*self.castling_squares[0][1],SIZE*self.castling_squares[0][0]
-                        self.surface.blit(special_surface,(coord_x,coord_y))
-                    if rook.col == 0:
-                        coord_x,coord_y = SIZE*self.castling_squares[1][1],SIZE*self.castling_squares[1][0]
-                        self.surface.blit(special_surface,(coord_x,coord_y))
+                    castling_condition_array.append(board.check_if_castle(self,rook,main_board_enemy_pieces))
+
+                if int(len(castling_condition_array)) > 0:
+                    special_surface.fill(blue_with_alpha)
+                    for rook,condition in zip(rooks,castling_condition_array):
+                        for key,castling_square in self.castling_squares.items():
+                            if key == rook.col and condition:
+                                coord_x,coord_y = SIZE*castling_square[1],SIZE*castling_square[0]
+                                self.surface.blit(special_surface,(coord_x,coord_y))
 
         showable_moves = self.moves
         #No mostrar movimientos en donde se resalte una casilla con una pieza aliada
