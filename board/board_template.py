@@ -8,6 +8,8 @@ from classes_pieces.Knight import Knight
 from classes_pieces.Rook import Rook
 from classes_pieces.Pawn import Pawn
 from .constants import VERDE,ROWS,COLS,SIZE
+import numpy as np
+from copy import deepcopy
 
 #Problemas con el jaque: Siempre hay jaquemate incluso si es posible tapar el jaque con una pieza o capturar la pieza
 #Utilizar el método copy() para que compruebe la instancia del tablero en el siguiente turno. Actualizar el tablero real si el movimiento que se va a realizar es posible, de ser el caso que no lo sea, no se actualiza y por lo tanto no se procede al siguiente turno
@@ -83,10 +85,6 @@ class Board:
                 if self.virtual_board[row] is not Piece and (row != 0 and row != 7 and row != 1 and row != 6): #Para dejar el polimorfismo alli
                     self.virtual_board[row].append(0)
 
-
-    def generate_pieces_moves(self, piece_arg):
-        if piece_arg is (Rook,Knight,Bishop,Queen,King,Pawn) and hasattr(piece_arg,"generate_moves"):
-            return piece_arg.generate_moves(self.virtual_board)
         
     def is_ally_piece(self,main_piece,other_piece):
         return True if main_piece.color == other_piece.color and isinstance(other_piece,Piece) else False
@@ -113,10 +111,6 @@ class Board:
         old_column = 0
         old_row = 0
 
-        if self.board_start_game == 0:
-            self.generate_moves()
-            self.board_start_game += 1
-
         if not self.checkmate:
             for row in self.virtual_board:
                 for piece in row:
@@ -139,7 +133,7 @@ class Board:
         for row in self.virtual_board:
             for element in row:
                 if isinstance(element,Piece):
-                    legal_moves = element.make_legal_moves(self)
+                    legal_moves = element.get_legal_moves(self)
                     element.assign_moves(legal_moves)
                     
 
@@ -165,9 +159,10 @@ class Board:
     def is_in_check(self,king,pieces):
         for piece in pieces:
             for move in piece.moves:
+                
                 if move[0] == king.get_row() and move[1] == king.get_column():
                     self.checked_status = True
-                    break
+                    
 
         if self.checked_status:
             return self.checked_status
@@ -175,12 +170,10 @@ class Board:
         return self.checked_status
     
     def get_king(self):
-        for row in range(ROWS):
-            for col in range(COLS):
-                if isinstance(self.virtual_board[row][col],King) and self.current_player_color == self.virtual_board[row][col].color:
-                    self.virtual_board[row][col].row = row
-                    self.virtual_board[row][col].col = col
-                    return self.virtual_board[row][col]
+        for row in self.virtual_board:
+            for piece in row:
+                if isinstance(piece,King) and self.current_player_color == piece.color:
+                    return piece
 
 
     def is_checkmate(self,king,enemy_pieces,ally_pieces):
@@ -188,16 +181,27 @@ class Board:
             return False
         if king.moves:
             return False
-        
+
+
+
         for piece in ally_pieces:
             legal_moves = piece.get_legal_moves(self)
             for move in legal_moves:
                 board_instance = self.simulate_move(piece,move)
-                if not board_instance.is_in_check(king,enemy_pieces):
-                    return False
+
+                board_instance.generate_moves()
+
+                new_enemy_pieces = board_instance.get_pieces()
                 
-            return True
-        return False
+                board_instance.print_board()
+                if not board_instance.is_in_check(king,new_enemy_pieces):
+                    print("Impresion del tablero en el metodo is_checkmate")
+                    board_instance.print_board()
+                    return False
+                del board_instance
+                
+        return True
+        
 
     
     def get_moves(self,pieces):
@@ -219,18 +223,50 @@ class Board:
         return pieces
     
     def get_valid_moves_king(self,king,enemy_pieces): 
+
         valid_moves = king.get_legal_moves(self)
-        legal_moves = king.get_legal_moves(self)
+
+        legal_moves = deepcopy(king.get_legal_moves(self))
 
         for move in valid_moves:
             is_instance = self.simulate_move(king,move)
-            if is_instance.is_in_check(king,enemy_pieces):
+            get_king = is_instance.get_king()
+            print(get_king.get_starting_square_coordinates())
+            print("Impresion del tablero en el metodo get_valid_mvoes_king antes del if")
+            print(f"Movimientos legales actuales: {legal_moves} movimiento a analizar: {move}")
+            if is_instance.is_in_check(get_king,enemy_pieces):
+                print("Impresion del tablero en el metodo get_valid_mvoes_king despues del if")
+                is_instance.print_board()
                 legal_moves.remove(move)
+                
         return legal_moves
     
     def print_board(self):
+        board_to_print = []
+
         for row in self.virtual_board:
-            print(row)
+            l = []
+            for element in row:
+
+                if isinstance(element,Piece) and element.color == 'white':
+                    if element.name == 'king':
+                        l.append('M')
+                    else: 
+                        l.append(element.name[0].upper())
+                elif isinstance(element,Piece) and element.color == 'black':
+                    if element.name == 'king':
+                        l.append('m')
+                    else:
+                        l.append(element.name[0])
+
+                if isinstance(element,int):
+                    l.append(element)
+            board_to_print.append(l)
+
+        print(np.matrix(board_to_print))
+        
+
+
     
     def create_copy(self):
         board_copy = Board(self.screen,self.white_player,self.black_player)
@@ -243,8 +279,8 @@ class Board:
         return board_copy
     
     def new_copy(self):
-        board_copy = Board(self.screen,self.white_player,self.black_player)
 
+        board_copy = Board(self.screen,self.white_player,self.black_player)
         for row in self.virtual_board:
             row_to_append = []
             for cell in row:
@@ -254,9 +290,12 @@ class Board:
                 else:
                     row_to_append.append(0)
             board_copy.virtual_board.append(row_to_append)
+
         board_copy.current_player_color = self.current_player_color
         return board_copy
     
+    #Validar si esta en jaque despues de mover
+
     def validate_if_check_after_move(self,king):
         copy = self.create_copy()
         copy.generate_moves()
@@ -265,8 +304,8 @@ class Board:
     
     def simulate_move(self,piece,move):
         instance = self.create_copy()
-        instance.update_board_status(row=piece.get_row(),column=piece.get_column(),new_column=move[1],new_row=move[0],piece=piece)
-        instance.generate_moves()
+        piece_copy = piece.clone()
+        instance.update_board_status(row=piece.get_row(),column=piece.get_column(),new_column=move[1],new_row=move[0],piece=piece_copy)
         return instance
     
     def check_if_castle(self,king,rook,enemy_pieces):
@@ -282,6 +321,8 @@ class Board:
             board_copy_king = board.get_king()
             instance_simulation = board.simulate_move(board_copy_king,adyacent_move)
             if instance_simulation.is_in_check(board_copy_king,enemy_pieces):
+                print("Impresion del tablero en el metodo check_if_castle")
+                instance_simulation.print_board()
                 return False
             
         king_col = king.get_column()

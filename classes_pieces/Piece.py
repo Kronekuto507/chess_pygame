@@ -2,7 +2,6 @@ import pygame
 from pygame.locals import *
 from pathlib import Path
 from board.constants import *
-import copy
 class Piece:
     def __init__(self, color, surface,row,col):
         self.surface= surface
@@ -62,12 +61,23 @@ class Piece:
         #Almacenar tablero en una nueva variable para luego hacer los calculos de validación del movimiento
         board_copy = board.create_copy()
         board_copy.generate_moves()
+
+        print("\n \n")
+        print("Copia del objeto board: variable board_copy en el metodo is_legal_move antes de llamar el metodo update_board_status de la variable board_capy")
+        board_copy.print_board()
+        print("\n \n")
+
         moves = self.moves
         #Se iguala la pieza actual en el tablero a una nueva referencia
         piece_sample = board_copy.virtual_board[self.get_row()][self.get_column()]
         new_destination = (row,col)
         #Mover pieza de forma virtual
         board_copy.update_board_status(row = self.get_row(),column = self.get_column(),new_column = col,new_row = row,piece = piece_sample)
+        
+        print("\n \n")
+        print("Copia del objeto board: variable board_copy en el metodo is_legal_move despues de llamar el metodo update_board_status de la variable board_capy")
+        board_copy.print_board()
+        print("\n \n")
 
         king = board.get_king()
         is_in_check = board_copy.validate_if_check_after_move(king)
@@ -169,26 +179,36 @@ class Piece:
             
             board.current_player_color = 'black' if board.current_player_color == 'white' else 'white'
         
-            board.generate_moves()
-
+            board.generate_moves() #Generar movimientos del tablero
+            
+            print("\n \n")
+            print("Impresion de la  copia del tablero en el metodo move_piece")
             board_copy = board.new_copy()
+
             board_copy.generate_moves()
+
+
+            board_copy.print_board()
+            print("\n \n")
+            
             enemy_pieces = board_copy.get_pieces()
             king = board_copy.get_king()
             actual_king = board.get_king()
 
             actual_king_row = actual_king.get_row()
             actual_king_column = actual_king.get_column()
-            print(f"#1 King's color is: {actual_king.color} and its coordinates are: {actual_king.get_starting_square_coordinates()}")
-            ally_pieces = board_copy.get_pieces(get_ally_pieces = True)
-            valid_moves_king = board_copy.get_valid_moves_king(king,enemy_pieces)
-            board.virtual_board[actual_king_row][actual_king_column].assign_moves(valid_moves_king)
-            print(f"#2 King's color is: {actual_king.color} and its coordinates are: {actual_king.get_starting_square_coordinates()}")
-            is_check= board.is_in_check(actual_king,enemy_pieces)
-            print(f"#3 King's color is: {actual_king.color} and its coordinates are: {actual_king.get_starting_square_coordinates()}")
-            board.checkmate = board.is_checkmate(actual_king,enemy_pieces,ally_pieces)
+
             
-            print(f"#4 King's color is: {actual_king.color} and its coordinates are: {actual_king.get_starting_square_coordinates()}")
+            valid_moves_king = board_copy.get_valid_moves_king(king,enemy_pieces)
+            print(f"Movimientos validos del rey: {valid_moves_king}")
+
+            board.virtual_board[actual_king_row][actual_king_column].assign_moves(valid_moves_king)
+            board_copy.virtual_board[king.get_row()][king.get_column()].assign_moves(actual_king.moves)
+            ally_pieces = board_copy.get_pieces(get_ally_pieces = True)
+            is_check= board.is_in_check(actual_king,enemy_pieces)
+
+            board.checkmate = board.is_checkmate(actual_king,enemy_pieces,ally_pieces)
+
             
         else:
             self.deselect()
@@ -206,7 +226,7 @@ class Piece:
         blue_with_alpha = TRANSPARENT_BLUE + (alpha_value,)
     
         #MOSTRAR CUADROS DEL ENROQUE
-        if self.name == 'king':
+        '''if self.name == 'king':
             main_board_enemy_pieces = board.get_pieces()
             rooks = board.get_rooks_for_castling(self)
             castling_condition_array = []
@@ -220,7 +240,7 @@ class Piece:
                         for key,castling_square in self.castling_squares.items():
                             if key == rook.col and condition:
                                 coord_x,coord_y = SIZE*castling_square[1],SIZE*castling_square[0]
-                                self.surface.blit(special_surface,(coord_x,coord_y))
+                                self.surface.blit(special_surface,(coord_x,coord_y))'''
 
         showable_moves = self.moves
         #No mostrar movimientos en donde se resalte una casilla con una pieza aliada
