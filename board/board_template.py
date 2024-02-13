@@ -174,6 +174,8 @@ class Board:
             for piece in row:
                 if isinstance(piece,King) and self.current_player_color == piece.color:
                     return piece
+        
+        #return [piece for row in self.virtual_board for piece in row if isinstance(piece,King) and self.current_player_color == piece.color][0]
 
 
     def is_checkmate(self,king,enemy_pieces,ally_pieces):
@@ -275,6 +277,8 @@ class Board:
             for col in range(COLS):
                 row_to_append.append(self.virtual_board[row][col])
             board_copy.virtual_board.append(row_to_append)
+        
+        #board_copy_virtual = [[col for col in row] for row in self.virtual_board]
         board_copy.current_player_color = self.current_player_color
         return board_copy
     
@@ -290,6 +294,8 @@ class Board:
                 else:
                     row_to_append.append(0)
             board_copy.virtual_board.append(row_to_append)
+
+        #board_copy_self.virtual_board = [[cell.clone() if isinstance(cell,Piece) else 0 for cell in row ] for row in self.virtual_board]
 
         board_copy.current_player_color = self.current_player_color
         return board_copy
@@ -365,6 +371,8 @@ class Board:
         for col in range(0,COLS):
             if isinstance(self.virtual_board[king.row][col],Rook):
                 rook_array.append(self.virtual_board[king.row][col])
+
+        # rook_array = [element for element in self.virtual_board[king.row] if isinstance(element,Rook)]
         return rook_array
 
                 

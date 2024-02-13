@@ -26,21 +26,6 @@ class King(Piece):
                     if isinstance(board.virtual_board[row][col],int) or not board.is_ally_piece(self,board.virtual_board[row][col]):
                         moves.append((row,col))
 
-        '''if not self.has_moved:
-            king_side_pos = self.col + 2
-            queen_side_pos = self.col - 2
-            rooks = self.get_rooks(board)
-            
-            king_side_empty = all(isinstance(board.virtual_board[self.row][col], int) for col in range(self.col + 1, self.col + 3))
-            #print("King Side Empty Check - Columns:", list(range(self.col + 1, self.col + 3)))  # Print columns being checked
-            queen_side_empty = all(isinstance(board.virtual_board[self.row][col], int) for col in range(self.col - 1, self.col - 4, -1))
-            #print("Queen Side Empty Check - Columns:", list(range(self.col - 1, self.col - 4, -1)))  # Print columns being checked
-            #print(f"King color: {self.color} and coordinates: {self.get_starting_square_coordinates()}")
-            if len(rooks) > 1 and not rooks[1].has_moved and king_side_empty:
-                moves.append((self.row, king_side_pos))
-            if len(rooks) > 0 and not rooks[0].has_moved and queen_side_empty:
-                moves.append((self.row, queen_side_pos))'''
-
         valid_moves = moves
         return valid_moves
     
