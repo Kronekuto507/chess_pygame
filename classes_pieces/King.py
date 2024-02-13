@@ -12,6 +12,7 @@ class King(Piece):
         self.can_castle_array = None
         self.starting_coordinates = (0,4) if self.color == 'black' else (7,4)
         self.castling_squares = {7: (self.row,6), 0: (self.row,2)}
+        self.has_castled = False
 
     def generate_moves(self, board):
         starter_row = self.row - 1

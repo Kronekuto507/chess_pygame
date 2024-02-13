@@ -69,7 +69,10 @@ class Piece:
 
         moves = self.moves
         #Se iguala la pieza actual en el tablero a una nueva referencia
+
         piece_sample = board_copy.virtual_board[self.get_row()][self.get_column()]
+
+
         new_destination = (row,col)
         #Mover pieza de forma virtual
         board_copy.update_board_status(row = self.get_row(),column = self.get_column(),new_column = col,new_row = row,piece = piece_sample)
@@ -90,20 +93,27 @@ class Piece:
 
         if not board.checked_status:
 
-            '''if self.name == 'king':
+            if self.name == 'king':
+                self.row = old_row
+                self.col = old_column
                 position = (row,col)
                 rooks = board.get_rooks_for_castling(self)
                 main_board_enemy_pieces = board.get_pieces()
                 castling_condition_array = []
                 if int(len(rooks)) > 0:
                     for rook in rooks:
+                        print("Impresion del tablero en el metodo is_legal_move dentro del condicional para detectar si el rey puede enrocar")
+                        board.print_board()
                         castling_condition_array.append(board.check_if_castle(self,rook,main_board_enemy_pieces))
                 
-                castling_condition_array = [x for x in castling_condition_array if x == True]
-                for value,condition in zip(self.castling_squares.values(),castling_condition_array):
-                    if position == value and condition:
-                       self.can_castle_array = castling_condition_array
-                       return True'''
+                castling_condition_array = [x for x in castling_condition_array if x]
+                castling_squares = list(self.castling_squares.values())
+
+                for condition in castling_condition_array:
+                    if position in castling_squares and condition:
+                        self.can_castle_array = castling_condition_array
+                        return True
+
 
             if is_in_check and new_destination in moves:
                 detect_if_false(board,old_column,old_row)
@@ -145,11 +155,12 @@ class Piece:
         if self.is_legal_move(x,y,board):
             new_x,new_y = self.get_new_coordinates(x,y)
             
-            '''if self.name == 'king':
+            if self.name == 'king':
                 if self.can_castle_array != None and int(len(self.can_castle_array)) > 0:
                     for condition in self.can_castle_array:
-                        if condition:
-                            board.castle(self,new_y)'''
+                        if condition and not self.has_castled:
+                            board.castle(self,new_y)
+                            self.can_castle_array = None
 
             self.row = new_x
             self.col = new_y
@@ -226,7 +237,7 @@ class Piece:
         blue_with_alpha = TRANSPARENT_BLUE + (alpha_value,)
     
         #MOSTRAR CUADROS DEL ENROQUE
-        '''if self.name == 'king':
+        if self.name == 'king':
             main_board_enemy_pieces = board.get_pieces()
             rooks = board.get_rooks_for_castling(self)
             castling_condition_array = []
@@ -240,7 +251,7 @@ class Piece:
                         for key,castling_square in self.castling_squares.items():
                             if key == rook.col and condition:
                                 coord_x,coord_y = SIZE*castling_square[1],SIZE*castling_square[0]
-                                self.surface.blit(special_surface,(coord_x,coord_y))'''
+                                self.surface.blit(special_surface,(coord_x,coord_y))
 
         showable_moves = self.moves
         #No mostrar movimientos en donde se resalte una casilla con una pieza aliada
