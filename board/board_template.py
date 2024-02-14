@@ -7,7 +7,7 @@ from classes_pieces.Queen import Queen
 from classes_pieces.Knight import Knight
 from classes_pieces.Rook import Rook
 from classes_pieces.Pawn import Pawn
-from .constants import VERDE,ROWS,COLS,SIZE
+from .constants import *
 import numpy as np
 from copy import deepcopy
 
@@ -29,6 +29,8 @@ class Board:
         self.move_counter = 0
         self.checkmate = False
         b_starter_row = 0
+        
+        self.sound_detect = 0
 
         self.current_king = None
         self.current_enemy_pieces = None
@@ -50,14 +52,13 @@ class Board:
         for row in range(0,ROWS):
             for col in range(row%2,ROWS,2):
                 coord_y,coord_x = SIZE*col,SIZE*row
-                self.draw_cell(self.screen,VERDE,coord_x,coord_y)
+                self.draw_cell(self.screen,CREMA,coord_x,coord_y)
 
         for row in self.virtual_board:
             for piece in row:
                 if isinstance(piece,Piece):
                     piece.set_image()
-        
-              
+                           
     def create_virtual_board(self):
         
         for row in range(ROWS):
@@ -165,17 +166,19 @@ class Board:
                     
 
         if self.checked_status:
+            #Para que no se repita el sonido de jaque indefinidamente
+            self.sound_detect = 1
             return self.checked_status
         self.checked_status = False
         return self.checked_status
     
     def get_king(self):
-        for row in self.virtual_board:
+        '''for row in self.virtual_board:
             for piece in row:
                 if isinstance(piece,King) and self.current_player_color == piece.color:
-                    return piece
+                    return piece'''
         
-        #return [piece for row in self.virtual_board for piece in row if isinstance(piece,King) and self.current_player_color == piece.color][0]
+        return [piece for row in self.virtual_board for piece in row if isinstance(piece,King) and self.current_player_color == piece.color][0]
 
 
     def is_checkmate(self,king,enemy_pieces,ally_pieces):
@@ -272,20 +275,21 @@ class Board:
     
     def create_copy(self):
         board_copy = Board(self.screen,self.white_player,self.black_player)
-        for row in range(ROWS):
+        '''for row in range(ROWS):
             row_to_append = []
             for col in range(COLS):
                 row_to_append.append(self.virtual_board[row][col])
-            board_copy.virtual_board.append(row_to_append)
+            board_copy.virtual_board.append(row_to_append)'''
         
-        #board_copy_virtual = [[col for col in row] for row in self.virtual_board]
+        board_copy_virtual = [[col for col in row] for row in self.virtual_board]
+        board_copy.virtual_board = board_copy_virtual
         board_copy.current_player_color = self.current_player_color
         return board_copy
     
     def new_copy(self):
 
         board_copy = Board(self.screen,self.white_player,self.black_player)
-        for row in self.virtual_board:
+        '''for row in self.virtual_board:
             row_to_append = []
             for cell in row:
                 if isinstance(cell,Piece):
@@ -293,9 +297,11 @@ class Board:
                     row_to_append.append(copy)
                 else:
                     row_to_append.append(0)
-            board_copy.virtual_board.append(row_to_append)
+            board_copy.virtual_board.append(row_to_append)'''
+        
 
-        #board_copy_self.virtual_board = [[cell.clone() if isinstance(cell,Piece) else 0 for cell in row ] for row in self.virtual_board]
+        board_copy_self_virtual_board = [[cell.clone() if isinstance(cell,Piece) else 0 for cell in row ] for row in self.virtual_board] #Crear copia del tablero virtual
+        board_copy.virtual_board = board_copy_self_virtual_board #Asignarlo a la copia creada arriba
 
         board_copy.current_player_color = self.current_player_color
         return board_copy
@@ -368,12 +374,17 @@ class Board:
     
     def get_rooks_for_castling(self,king):
         rook_array = []
-        for col in range(0,COLS):
+        '''for col in range(0,COLS):
             if isinstance(self.virtual_board[king.row][col],Rook):
-                rook_array.append(self.virtual_board[king.row][col])
+                rook_array.append(self.virtual_board[king.row][col])'''
 
-        # rook_array = [element for element in self.virtual_board[king.row] if isinstance(element,Rook)]
+        rook_array = [element for element in self.virtual_board[king.row] if isinstance(element,Rook)]
         return rook_array
+    
+    def restart_move_status(self):
+        self.virtual_board[self.moved_piece.get_row()][self.moved_piece.get_column()].restart_move_status()
+    
+
 
                 
 

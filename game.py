@@ -19,8 +19,11 @@ class Game:
         chess_board = Board(self.screen,players[0],players[1])
         chess_board.create_virtual_board()
         chess_board.generate_moves()
-
-        while self.is_running:         
+        clock = pygame.time.Clock()
+        while self.is_running:
+            
+            self.screen.fill(VERDE)
+            chess_board.draw_board()         
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.is_running = False
@@ -31,10 +34,27 @@ class Game:
                     elif event.button == 3:
                         x,y = event.pos
                         chess_board.move_piece_on_board(x,y)
+
+            if chess_board.moved_piece != None:
+                if chess_board.moved_piece.did_legal_move:
+
+                    new_x,new_y = chess_board.moved_piece.get_new_position()
+                    old_x,old_y = chess_board.moved_piece.old_positions
+                    chess_board.moved_piece.pos_x = old_x
+                    chess_board.moved_piece.pos_y = old_y
+
+                    while(chess_board.moved_piece.pos_x != new_x or chess_board.moved_piece.pos_y != new_y):
+                        chess_board.moved_piece.animate()
+                        self.screen.fill(VERDE)
+                        chess_board.draw_board()
+                        pygame.display.update()
+                        clock.tick(60)
+
+                    chess_board.restart_move_status()
+
             if chess_board.checkmate:
                 break
-            self.screen.fill(CREMA)
-            chess_board.draw_board()
+            
             #Si hay una pieza seleccionada, entonces esta muestra las celdas a las que puede ir  
             for row in chess_board.virtual_board:
                 for piece in row:
@@ -43,6 +63,7 @@ class Game:
                             piece.show_squares(chess_board)
             
             pygame.display.update()
+            clock.tick(60)
         pygame.quit()
 
         winner = 'white' if chess_board.current_player_color == 'black' else 'black'

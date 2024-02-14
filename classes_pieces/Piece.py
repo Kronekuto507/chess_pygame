@@ -16,11 +16,37 @@ class Piece:
         self.moves = []
         self.calc_pos()
         self.true_moves = []
+        self.did_legal_move = False
+
+        self.old_positions = None
+        self.goal_positions = None
         
     
     def calc_pos(self):
         self.pos_x = SIZE * self.col 
         self.pos_y = SIZE * self.row
+    
+    def animate(self):
+        new_pos_x = SIZE * self.col
+        new_pos_y = SIZE * self.row
+
+        dx = round((abs(self.pos_x - new_pos_x))/((self.col + 1)))
+        dy = round((abs(self.pos_y - new_pos_y))/((self.row + 1)))
+
+        if self.name in ('queen', 'bishop'):
+            dx = dy
+
+        velocity_x = dx if new_pos_x > self.pos_x else (-dx if new_pos_x < self.pos_x else 0)
+        velocity_y = dy if new_pos_y > self.pos_y else (-dy if new_pos_y < self.pos_y else 0)
+
+        if new_pos_x != self.pos_x: 
+            self.pos_x += velocity_x
+        if new_pos_y != self.pos_y:
+            self.pos_y += velocity_y
+        
+        if dx == 0 and dy == 0:
+            self.pos_x = new_pos_x
+            self.pos_y = new_pos_y
     
     def create_image(self):
 
@@ -52,6 +78,9 @@ class Piece:
     
     def get_starting_square_coordinates(self):
         return (self.get_row(),self.get_column())
+    
+    def get_coordinates_x_y(self):
+        return self.pos_x,self.pos_y
 
     
     def is_legal_move(self,x,y,board):
@@ -151,19 +180,28 @@ class Piece:
 
         capture_sound = pygame.mixer.Sound(r".\sounds\capture.mp3")
         piece_move_sound = pygame.mixer.Sound(r".\sounds\move-self.mp3")
+        castling_sound = pygame.mixer.Sound(r".\sounds\castling_sound.mp3")
+        check_sound = pygame.mixer.Sound(r".\sounds\check_sound.mp3")
+        silly_sound = pygame.mixer.Sound(r".\sounds\troll_sound.mp3")
 
+        did_capture = False
         if self.is_legal_move(x,y,board):
             new_x,new_y = self.get_new_coordinates(x,y)
-            
+            self.old_positions = self.get_coordinates_x_y()
+            self.did_legal_move = True
+
+            self.row = new_x
+            self.col = new_y
+
             if self.name == 'king':
                 if self.can_castle_array != None and int(len(self.can_castle_array)) > 0:
                     for condition in self.can_castle_array:
                         if condition and not self.has_castled:
                             board.castle(self,new_y)
+                            castling_sound.play()
                             self.can_castle_array = None
 
-            self.row = new_x
-            self.col = new_y
+
 
             if self.name == 'rook':
                 self.has_moved = True
@@ -175,16 +213,16 @@ class Piece:
 
             board.moved_piece = self
             self.deselect()
-            self.calc_pos()
+            
 
             if board.moved_piece.name == 'pawn' and board.moved_piece.has_promoted():
                 board.promote(board.moved_piece,old_row,old_column)
 
             elif board.moved_piece.name in ('pawn','rook','queen','king','knight','bishop'):
-                if isinstance(board.virtual_board[board.moved_piece.get_row()][board.moved_piece.get_column()],int):
-                    piece_move_sound.play()
-                elif isinstance(board.virtual_board[board.moved_piece.get_row()][board.moved_piece.get_column()],Piece) and not board.is_ally_piece(self,board.virtual_board[board.moved_piece.get_row()][board.moved_piece.get_column()]):
-                    capture_sound.play()
+                '''if isinstance(board.virtual_board[board.moved_piece.get_row()][board.moved_piece.get_column()],int):
+                    piece_move_sound.play()'''
+                if isinstance(board.virtual_board[board.moved_piece.get_row()][board.moved_piece.get_column()],Piece) and not board.is_ally_piece(self,board.virtual_board[board.moved_piece.get_row()][board.moved_piece.get_column()]):
+                    did_capture = True
                 board.update_board_status(old_row,old_column,board.moved_piece.get_column(),board.moved_piece.get_row(),board.moved_piece)
             
             
@@ -217,6 +255,13 @@ class Piece:
             board_copy.virtual_board[king.get_row()][king.get_column()].assign_moves(actual_king.moves)
             ally_pieces = board_copy.get_pieces(get_ally_pieces = True)
             is_check= board.is_in_check(actual_king,enemy_pieces)
+            
+            if board.checked_status:
+                check_sound.play()
+            elif did_capture:
+                capture_sound.play()
+            else:
+                piece_move_sound.play()
 
             board.checkmate = board.is_checkmate(actual_king,enemy_pieces,ally_pieces)
 
@@ -224,6 +269,8 @@ class Piece:
         else:
             self.deselect()
             board.generate_moves()
+            if board.checked_status:
+                silly_sound.play()
             
                     
     def show_squares(self,board):
@@ -297,6 +344,14 @@ class Piece:
     
     def clone(self):
         pass
+
+    def restart_move_status(self):
+        self.did_legal_move = False
+    
+    def get_new_position(self):
+        x = SIZE * self.col
+        y = SIZE * self.row
+        return x,y
 
 
 
