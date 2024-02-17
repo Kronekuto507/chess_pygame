@@ -2,6 +2,7 @@ import pygame
 from pygame.locals import *
 from pathlib import Path
 from board.constants import *
+import math
 class Piece:
     def __init__(self, color, surface,row,col):
         self.surface= surface
@@ -33,12 +34,13 @@ class Piece:
         dx = round((abs(self.pos_x - new_pos_x))/((self.col + 1)))
         dy = round((abs(self.pos_y - new_pos_y))/((self.row + 1)))
 
-        if self.name in ('queen', 'bishop'):
+        if self.name in ('queen', 'bishop','pawn'):
             dx = dy
 
         velocity_x = dx if new_pos_x > self.pos_x else (-dx if new_pos_x < self.pos_x else 0)
         velocity_y = dy if new_pos_y > self.pos_y else (-dy if new_pos_y < self.pos_y else 0)
-
+        velocity = round(math.sqrt(dx**2 + dy**2))
+        
         if new_pos_x != self.pos_x: 
             self.pos_x += velocity_x
         if new_pos_y != self.pos_y:
@@ -194,6 +196,7 @@ class Piece:
             self.col = new_y
 
             if self.name == 'king':
+                self.has_moved = True
                 if self.can_castle_array != None and int(len(self.can_castle_array)) > 0:
                     for condition in self.can_castle_array:
                         if condition and not self.has_castled:

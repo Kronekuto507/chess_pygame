@@ -26,8 +26,9 @@ class Pawn(Piece):
                     next_row += step
                     if isinstance(board.virtual_board[next_row][self.col],int):
                         moves.append((next_row, self.col))
-                    if isinstance(board.virtual_board[next_row + step][self.col],int):
-                        moves.append((next_row + step, self.col))
+                        if not isinstance(board.virtual_board[new_row][self.col],Piece):
+                            if isinstance(board.virtual_board[next_row + step][self.col],int):
+                                moves.append((next_row + step, self.col))
 
             for element in offsett_capture:
                 row = self.row + element[0]

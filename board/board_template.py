@@ -58,7 +58,7 @@ class Board:
             for piece in row:
                 if isinstance(piece,Piece):
                     piece.set_image()
-                           
+
     def create_virtual_board(self):
         
         for row in range(ROWS):
@@ -383,39 +383,6 @@ class Board:
     
     def restart_move_status(self):
         self.virtual_board[self.moved_piece.get_row()][self.moved_piece.get_column()].restart_move_status()
-    
-
-
-                
 
         
-
-
-
-
-
-
-
-
-        
-
-
-
-
-                            
-            
-
-
-
-
-
-
-
-
-
-
-
-
-            
-            
-                
+          
