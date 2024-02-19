@@ -123,7 +123,15 @@ class Piece:
             self.true_moves = moves
 
         if not board.checked_status:
-
+            if self.name == 'pawn':
+                self.row = old_row
+                self.col = old_column
+                if board.check_if_en_passant() and self.show_en_passant != None and not self.has_done_en_passant:
+                    if new_destination == self.show_en_passant:
+                        self.true_moves = moves
+                        self.has_done_en_passant = True
+                        return True
+                    
             if self.name == 'king':
                 self.row = old_row
                 self.col = old_column
@@ -194,6 +202,10 @@ class Piece:
 
             self.row = new_x
             self.col = new_y
+
+            if self.name == 'pawn':
+                if self.has_done_en_passant:
+                    board.make_en_passant(self,new_x,new_y)
 
             if self.name == 'king':
                 self.has_moved = True
@@ -280,12 +292,20 @@ class Piece:
 
         transparent_surface = pygame.Surface((SIZE,SIZE),pygame.SRCALPHA)
         special_surface = pygame.Surface((SIZE,SIZE), pygame.SRCALPHA)
+        en_passant_surface = pygame.Surface((SIZE,SIZE),pygame.SRCALPHA)
 
         alpha_value = 100
 
         green_with_alpha = TRANSPARENT_GREEN + (alpha_value,)
         blue_with_alpha = TRANSPARENT_BLUE + (alpha_value,)
-    
+        red_with_alpha = TRANSPARENT_RED + (alpha_value,)
+
+        if self.name == 'pawn':
+            if board.check_if_en_passant() and self.show_en_passant != None:
+                coord_x,coord_y = SIZE * self.show_en_passant[1],SIZE*self.show_en_passant[0]
+                en_passant_surface.fill(red_with_alpha)
+                self.surface.blit(en_passant_surface,(coord_x,coord_y))
+
         #MOSTRAR CUADROS DEL ENROQUE
         if self.name == 'king':
             main_board_enemy_pieces = board.get_pieces()

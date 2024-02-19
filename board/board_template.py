@@ -19,8 +19,10 @@ class Board:
         #Plantilla en donde se dibujara el resto de cuadros
         #Diccionario que almacena las coordenadas de las superficie (Posiblemente innecesario, puede que lo elimine después)
         self.virtual_board = [] #Representacion virtual del tablero
-        self.selected_piece = None
+        
         self.moved_piece = None
+        self.selected_piece = None
+
         self.screen = screen
         self.white_player = white_player
         self.black_player = black_player
@@ -58,6 +60,12 @@ class Board:
             for piece in row:
                 if isinstance(piece,Piece):
                     piece.set_image()
+    
+    def internal_logic_of_selection(self):
+        for row in self.virtual_board:
+            for piece in row:
+                if isinstance(piece,Piece) and piece.is_selected:
+                    self.selected_piece = piece
 
     def create_virtual_board(self):
         
@@ -67,11 +75,13 @@ class Board:
                     if row == 6:
                         w_pawn = Pawn('white',self.screen,row,col)
                         self.virtual_board[row].append(w_pawn)
-                        self.virtual_board[row][col].create_image()  
+                        self.virtual_board[row][col].create_image()
+                        self.virtual_board[row][col].starting_square = self.virtual_board[row][col].get_starting_square_coordinates()
                     elif row == 1:
                         b_pawn = Pawn('black', self.screen,row,col)
                         self.virtual_board[row].append(b_pawn)
                         self.virtual_board[row][col].create_image()
+                        self.virtual_board[row][col].starting_square = self.virtual_board[row][col].get_starting_square_coordinates()
         
         for col in range (COLS):
             self.virtual_board[0].append(self.b_array[col])
@@ -95,17 +105,18 @@ class Board:
         for row in self.virtual_board:
             for piece in row:
                 if isinstance(piece,Piece) and piece.color == self.current_player_color:
-                    if self.selected_piece is None: #Se detecta si no existe ya un objeto seleccionado, de ser el caso, seleccionar directamente
+                    if self.selected_piece == None: #Se detecta si no existe ya un objeto seleccionado, de ser el caso, seleccionar directamente
                         piece.select_piece(x,y)
-                        self.selected_piece = piece
                         
+                    
                     else: #Si ya hay un objeto, este 
                         selected_row = piece.get_row()
                         selected_col = piece.get_column()
                     
                         self.virtual_board[selected_row][selected_col].deselect()
                         piece.select_piece(x,y)
-                        self.selected_piece = piece
+                    
+                
 
     def move_piece_on_board(self,x,y):
         
@@ -384,5 +395,32 @@ class Board:
     def restart_move_status(self):
         self.virtual_board[self.moved_piece.get_row()][self.moved_piece.get_column()].restart_move_status()
 
-        
-          
+    def check_if_en_passant(self):
+        print(self.selected_piece)
+        if self.moved_piece != None and self.selected_piece != None:
+            piece = self.selected_piece.clone()
+            if self.moved_piece.name == 'pawn':
+                print(self.moved_piece.color)
+                current_coordinates_moved_piece = self.moved_piece.get_starting_square_coordinates()
+                print(current_coordinates_moved_piece)
+                if piece.name == 'pawn':
+                    print(piece.name)
+                    current_selected_piece_coordinates = piece.get_starting_square_coordinates()
+                    print(current_selected_piece_coordinates)
+                    #variable para comparar la posicion
+                    piece_next = current_selected_piece_coordinates if (current_coordinates_moved_piece[0], current_coordinates_moved_piece[1] + 1) == current_selected_piece_coordinates or (current_coordinates_moved_piece[0], current_coordinates_moved_piece[1] - 1) == current_selected_piece_coordinates else 0
+                    var = True if isinstance(piece_next,tuple) else False
+                    print(var)
+                    if var and not piece.has_done_en_passant:
+                        piece.show_en_passant = (current_coordinates_moved_piece[0] - 1,current_coordinates_moved_piece[1]) if self.moved_piece.color == 'black' else (current_coordinates_moved_piece[0] + 1,current_coordinates_moved_piece[1])
+                        self.selected_piece.show_en_passant = piece.show_en_passant
+                        return var
+                
+        return False
+    
+    def make_en_passant(self,pawn,row,col):
+        print(f"({row}, {col})")
+        en_passant_row = row + 1 if pawn.color == 'white' else row - 1
+        self.virtual_board[en_passant_row][col] = 0
+
+

@@ -31,6 +31,7 @@ class Game:
                     if event.button == 1: #Esta parte necesita ser debuggeada
                         x,y = event.pos
                         chess_board.select_piece_on_board(x,y)
+                        chess_board.internal_logic_of_selection()
                     elif event.button == 3:
                         x,y = event.pos
                         chess_board.move_piece_on_board(x,y)

@@ -11,6 +11,10 @@ class Pawn(Piece):
         self.promo_rank = 0 if self.color == 'white' else 7
         self.promoted = False
         self.attacking_squares = []
+        self.has_done_en_passant = False
+        self._starting_square = None
+        self.show_en_passant = None
+
     def generate_moves(self,board):
         moves = []
         step = 1 if self.color == "black" else -1
