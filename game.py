@@ -1,7 +1,7 @@
 import pygame
 from pygame.locals import *
 from board.board_template import *
-from board.constants import WIDTH,HEIGHT,CREMA
+from board.constants import WIDTH,HEIGHT
 from classes_pieces.Piece import *
 from player.player_class import Player
 
