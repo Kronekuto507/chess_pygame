@@ -37,9 +37,9 @@ class Bishop(Piece):
                             previous_col = col
                             break
                         else:
-                            if board.is_ally_piece(self,board.virtual_board[row][col]):
-                                break
-                            else:
                                 array_moves.append((row,col))
                                 break
         return array_moves
+    
+    def clone(self):
+        return Bishop(self.color,self.surface,self.row,self.col)

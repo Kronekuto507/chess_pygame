@@ -9,9 +9,10 @@ class King(Piece):
         super().__init__(color, surface, row, col)
         self.name = 'king'
         self.has_moved = False
-        self.is_checked = False
-        self.queen_side_pos = self.col - 2
-        self.king_side_pos = self.col + 2
+        self.can_castle_array = None
+        self.starting_coordinates = (0,4) if self.color == 'black' else (7,4)
+        self.castling_squares = {7: (self.row,6), 0: (self.row,2)}
+        self.has_castled = False
 
     def generate_moves(self, board):
         starter_row = self.row - 1
@@ -25,37 +26,21 @@ class King(Piece):
                     if isinstance(board.virtual_board[row][col],int) or not board.is_ally_piece(self,board.virtual_board[row][col]):
                         moves.append((row,col))
 
-        if not self.has_moved:
-            king_side_pos = self.col + 2
-            queen_side_pos = self.col - 2
-            rooks = self.get_rooks(board)
-            if not rooks[1].has_moved and (isinstance(board.virtual_board[self.row][self.col + 1],int) and #AQUI HAY BUG
-                isinstance(board.virtual_board[self.row][self.col + 2],int)):
-                moves.append((self.row,king_side_pos))
-            if not rooks[0].has_moved and (isinstance(board.virtual_board[self.row][self.col - 1],int) and
-                isinstance(board.virtual_board[self.row][self.col - 2],int) and
-                isinstance(board.virtual_board[self.row][self.col - 3], int)):
-                moves.append((self.row,queen_side_pos))
-        
-        valid_moves = self.get_valid_moves(moves,board.get_enemy_pieces())
+        valid_moves = moves
         return valid_moves
     
     def get_rooks(self,board):
-        rook_array = []
-        for col in range(0,COLS):
-            if isinstance(board.virtual_board[self.row][col],Rook):
-                rook_array.append(board.virtual_board[self.row][col])
-        return rook_array
+        pass
     
-    def get_valid_moves(self,moves,enemy_pieces): #HAY UN BUG CON EL PEON
-        valid_moves = moves
-        for piece in enemy_pieces:
-            for move in moves:
-                for piece_move in piece.moves:
-                    if move == piece_move and piece.color != self.color:
-                        valid_moves.remove(move)
-        return valid_moves
+    def can_castle_m(self):
+        return self.can_castle
+    
+    def clone(self):
 
+        king = King(self.color,self.surface,self.row,self.col)
+        king.has_moved = self.has_moved
+        king.can_castle_array = self.can_castle_array
+        return king
         
     
         

@@ -10,7 +10,11 @@ class Pawn(Piece):
         self.has_moved = False
         self.promo_rank = 0 if self.color == 'white' else 7
         self.promoted = False
-    
+        self.attacking_squares = []
+        self.has_done_en_passant = False
+        self._starting_square = None
+        self.show_en_passant = None
+
     def generate_moves(self,board):
         moves = []
         step = 1 if self.color == "black" else -1
@@ -26,8 +30,9 @@ class Pawn(Piece):
                     next_row += step
                     if isinstance(board.virtual_board[next_row][self.col],int):
                         moves.append((next_row, self.col))
-                    if isinstance(board.virtual_board[next_row + step][self.col],int):
-                        moves.append((next_row + step, self.col))
+                        if not isinstance(board.virtual_board[new_row][self.col],Piece):
+                            if isinstance(board.virtual_board[next_row + step][self.col],int):
+                                moves.append((next_row + step, self.col))
 
             for element in offsett_capture:
                 row = self.row + element[0]
@@ -35,10 +40,18 @@ class Pawn(Piece):
                 if row >= 0 and row <= 7 and col>=0 and col <= 7:
                     if isinstance(board.virtual_board[row][col],Piece) and not board.is_ally_piece(self,board.virtual_board[row][col]):
                         moves.append((row,col))
+                    self.attacking_squares.append((row,col))
 
         return moves
     
     def has_promoted(self):
         return self.promoted
+    
+    def clone(self):
+        new_pawn = Pawn(self.color,self.surface,self.row,self.col)
+        new_pawn.has_moved = self.has_moved
+        new_pawn.promoted = self.promoted
+        new_pawn.attacking_squares = self.attacking_squares
+        return new_pawn
 
                 
