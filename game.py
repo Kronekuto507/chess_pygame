@@ -7,7 +7,7 @@ from player.player_class import Player
 
 #Se han solucionado la mayoría de las cosas. Ahora se debe de detectar si está en jaquemate correctamente. 
 #Enroque largo no funciona y el rey aun cuando hayan casillas en las que no este en jaque y pueda moverse este no se mueve a ellas
-class Game:
+'''class Game:
     def __init__(self):
         pygame.init()
         self.is_running = True
@@ -72,4 +72,4 @@ class Game:
 
 if __name__ == "__main__":
     game = Game()
-    game.run()
+    game.run()'''
