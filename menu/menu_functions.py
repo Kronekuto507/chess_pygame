@@ -20,7 +20,7 @@ def create_user():
     SUBMIT_BUTTON = SubmitButton(x_pos=SCREEN_CENTER,y_pos=300,text="SUBMIT",main_surface=SCREEN,
                                  base_color='white',hovering_color='green')
     TEXT_INPUT_USER = TextInput(pos_x=SCREEN_CENTER,pos_y=100,screen=SCREEN,text_input_id=1)
-    TEXT_INPUT_PASSWORD = TextInput(pos_x=SCREEN_CENTER,pos_y=150,screen=SCREEN,text_input_id=2)
+    TEXT_INPUT_PASSWORD = TextInput(pos_x=SCREEN_CENTER,pos_y=150,screen=SCREEN,text_input_id=2,hide_text=True)
 
     widgets = [MAIN_MENU_BUTTON,SUBMIT_BUTTON,TEXT_INPUT_USER,TEXT_INPUT_PASSWORD]
 
