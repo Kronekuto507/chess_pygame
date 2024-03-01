@@ -41,6 +41,7 @@ class Button():
     
     def check_input(self,position):
         if position[0] in range(self.rect.left,self.rect.right) and position[1] in range(self.rect.top,self.rect.bottom):
+            print(self.text.get_width())
             return True
         return False
 

@@ -3,7 +3,7 @@ import sys
 
 class TextInput():
     base_font = pygame.font.SysFont("Arial",32)
-    max_text_size = 160
+    max_text_size = 360
     def __init__(self,pos_x,pos_y,screen,text_input_id, hide_text = False):
 
         self.screen = screen
@@ -26,6 +26,7 @@ class TextInput():
 
     def render(self):
         pygame.draw.rect(self.screen,self.color,self.input_rect,2)
+        
         showable_text = ''
 
         if self.hide_text:
@@ -47,9 +48,11 @@ class TextInput():
         if (mouse_position[0] in range(self.input_rect.left,self.input_rect.right) and mouse_position[1] 
         in range(self.input_rect.top,self.input_rect.bottom)):
             self.is_selected = True
+            self.color = self.color_selected
             return self.is_selected
         
         self.is_selected = False
+        self.color = self.color_unselected
         return self.is_selected
 
     def return_text(self):

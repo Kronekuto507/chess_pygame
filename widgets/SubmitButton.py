@@ -7,6 +7,6 @@ class SubmitButton(Button):
     def get_from_text_input(self,*args,**kwargs):
         text_from_inputs = []
         for text_input in args:
-            text_from_inputs.append(text_input.get_text())
+            text_from_inputs.append(text_input.return_text())
             text_input.text = ''
         return text_from_inputs[0] if int(len(text_from_inputs)) < 2 else text_from_inputs

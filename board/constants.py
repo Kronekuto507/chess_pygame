@@ -1,7 +1,6 @@
 import pygame
 from pygame import locals
 
-
 WIDTH = 600
 HEIGHT = 600
 
@@ -16,4 +15,6 @@ TRANSPARENT_GREEN = (0,255,0)
 TRANSPARENT_BLUE = (30,144,255)
 TRANSPARENT_RED= (255,0,0)
 SCREEN = pygame.display.set_mode((WIDTH,HEIGHT))
+BG_1 = pygame.image.load(r".\images\chess_bg.jpg").convert_alpha()
+
 

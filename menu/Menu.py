@@ -7,14 +7,14 @@ from menu.menu_functions import *
 from functools import partial
 
 
-
-CREATE_USER = Button(x_pos=SCREEN_CENTER, y_pos=100, text="Create User", 
+PLACE = 100
+CREATE_USER = Button(x_pos=PLACE, y_pos=225, text="Create User", 
                     main_surface=SCREEN, base_color="white",hovering_color="green")
-PLAY = Button(x_pos=SCREEN_CENTER,y_pos=150,text="Play",
+PLAY = Button(x_pos=PLACE,y_pos=275,text="Play",
                 main_surface=SCREEN,base_color="white",hovering_color="black")
-LEADERBOARD = Button(x_pos=SCREEN_CENTER,y_pos=200, text= "Leaderboard",
+LEADERBOARD = Button(x_pos=PLACE,y_pos=325, text= "Leaderboard",
                     main_surface= SCREEN, base_color= "white", hovering_color = "green")
-QUIT = Button(x_pos=SCREEN_CENTER,y_pos=SCREEN_CENTER,text="Quit",main_surface=SCREEN,base_color="white",hovering_color="green")
+QUIT = Button(x_pos=PLACE,y_pos=400,text="Quit",main_surface=SCREEN,base_color="white",hovering_color="green")
 
 FUNCTION_LIST = [create_user,play,leader_board,quit]
 BUTTON_LIST = [CREATE_USER,PLAY,LEADERBOARD,QUIT]
@@ -25,11 +25,11 @@ class Menu():
     def render_menu(self):
         
         while True:
-            SCREEN.fill(pygame.Color(238,238,210))
-            prov = pygame.font.SysFont("cambria",100)
+            SCREEN.blit(BG_1,(0,0))
+            prov = pygame.font.SysFont("cambria",150)
             MOUSE_POS_MENU = pygame.mouse.get_pos()
-            MENU_TEXT = prov.render("CHESS",True, "#b68f40")
-            MENU_RECT = MENU_TEXT.get_rect(center = (SCREEN_CENTER,50))
+            MENU_TEXT = prov.render("CHESS",True, "white")
+            MENU_RECT = MENU_TEXT.get_rect(center = (MENU_TEXT.get_width() - 200,100))
             
             
             SCREEN.blit(MENU_TEXT,MENU_RECT)
