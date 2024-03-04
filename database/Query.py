@@ -13,6 +13,9 @@ class Query:
     def return_information(self):
         return self.__cursor.fetchall()
     
+    def fetch_one(self):
+        return self.__cursor.fetchone()
+
     def __del__(self):
         self.__db.close()
 

@@ -16,5 +16,6 @@ TRANSPARENT_BLUE = (30,144,255)
 TRANSPARENT_RED= (255,0,0)
 SCREEN = pygame.display.set_mode((WIDTH,HEIGHT))
 BG_1 = pygame.image.load(r".\images\chess_bg.jpg").convert_alpha()
+primary_database = "user_info.sqlite"
 
 

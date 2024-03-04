@@ -53,3 +53,6 @@ class Button():
     
     def on_click_behaviour(self,function):
         function()
+
+    def get_text(self):
+        return self.text_input
