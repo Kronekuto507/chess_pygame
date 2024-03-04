@@ -3,6 +3,7 @@ from pygame.locals import *
 from pathlib import Path
 from board.constants import *
 import math
+import time
 class Piece:
     def __init__(self, color, surface,row,col):
         self.surface= surface
@@ -39,7 +40,6 @@ class Piece:
 
         velocity_x = dx if new_pos_x > self.pos_x else (-dx if new_pos_x < self.pos_x else 0)
         velocity_y = dy if new_pos_y > self.pos_y else (-dy if new_pos_y < self.pos_y else 0)
-        velocity = round(math.sqrt(dx**2 + dy**2))
         
         if new_pos_x != self.pos_x: 
             self.pos_x += velocity_x
@@ -196,6 +196,7 @@ class Piece:
 
         did_capture = False
         if self.is_legal_move(x,y,board):
+            #Calcular coordenadas nuevas 
             new_x,new_y = self.get_new_coordinates(x,y)
             self.old_positions = self.get_coordinates_x_y()
             self.did_legal_move = True
@@ -203,6 +204,7 @@ class Piece:
             self.row = new_x
             self.col = new_y
 
+            #Movimientos especiales
             if self.name == 'pawn':
                 if self.has_done_en_passant:
                     board.make_en_passant(self,new_x,new_y)
@@ -215,6 +217,7 @@ class Piece:
                             board.castle(self,new_y)
                             castling_sound.play()
                             self.can_castle_array = None
+            #Movimientos especiales
 
 
 
@@ -234,13 +237,19 @@ class Piece:
                 board.promote(board.moved_piece,old_row,old_column)
 
             elif board.moved_piece.name in ('pawn','rook','queen','king','knight','bishop'):
-                '''if isinstance(board.virtual_board[board.moved_piece.get_row()][board.moved_piece.get_column()],int):
-                    piece_move_sound.play()'''
+
                 if isinstance(board.virtual_board[board.moved_piece.get_row()][board.moved_piece.get_column()],Piece) and not board.is_ally_piece(self,board.virtual_board[board.moved_piece.get_row()][board.moved_piece.get_column()]):
                     did_capture = True
+                    #Aumentar contador de piezas por cada jugador de forma individual
+                    if board.current_player_color == 'black':
+                        board.black_player.counter_increase(board.virtual_board[board.moved_piece.get_row()][board.moved_piece.get_column()])
+                    if board.current_player_color == 'white':
+                        board.white_player.counter_increase(board.virtual_board[board.moved_piece.get_row()][board.moved_piece.get_column()])
+                        
                 board.update_board_status(old_row,old_column,board.moved_piece.get_column(),board.moved_piece.get_row(),board.moved_piece)
+
             
-            
+            board.move_counter += 1
             board.current_player_color = 'black' if board.current_player_color == 'white' else 'white'
         
             board.generate_moves() #Generar movimientos del tablero
@@ -270,7 +279,6 @@ class Piece:
             board_copy.virtual_board[king.get_row()][king.get_column()].assign_moves(actual_king.moves)
             ally_pieces = board_copy.get_pieces(get_ally_pieces = True)
             is_check= board.is_in_check(actual_king,enemy_pieces)
-            
             if board.checked_status:
                 check_sound.play()
             elif did_capture:

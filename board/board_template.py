@@ -9,6 +9,7 @@ from classes_pieces.Rook import Rook
 from classes_pieces.Pawn import Pawn
 from .constants import *
 import numpy as np
+import time
 from copy import deepcopy
 
 #Problemas con el jaque: Siempre hay jaquemate incluso si es posible tapar el jaque con una pieza o capturar la pieza
@@ -33,8 +34,14 @@ class Board:
         b_starter_row = 0
         
         self.sound_detect = 0
+        self.winner = None
 
         self.current_enemy_pieces = None
+
+        self.move_counter = 0
+
+        self.inicio_tiempo = time.time()
+        self.fin = 0
 
         self.b_array = [Rook('black',screen,b_starter_row,0),Knight('black',screen,b_starter_row,1)
                    ,Bishop('black',screen,b_starter_row,2),Queen('black',screen,b_starter_row,3),King('black',screen,b_starter_row,4)
