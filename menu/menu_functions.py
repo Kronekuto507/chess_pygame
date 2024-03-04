@@ -6,6 +6,7 @@ from widgets.Button import Button
 from widgets.SubmitButton import SubmitButton
 from board.constants import *
 from database.Query import Query
+from menu.Stats import StatMenu
 obtained_text = None
 
 
@@ -114,6 +115,7 @@ def create_user():
 
             if event.type == pygame.KEYDOWN:
                 for text_input in text_inputs:
+                    #Logica a ejecutar cuando esta seleccionado
                     if text_input.select_text_input(MOUSE_BUTTON_POS):
                         if event.key == pygame.K_BACKSPACE:
                             text_input.delete_char()
@@ -204,8 +206,8 @@ def play():
 
 
 def leader_board():
-    pass
-
+    stat = StatMenu()
+    stat.render()
 def quit():
     sys.exit()
 

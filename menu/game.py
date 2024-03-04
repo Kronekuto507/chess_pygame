@@ -6,6 +6,7 @@ from player.player_class import Player
 from widgets.Button import Button
 import sys
 import time
+from database.Query import Query
 
 class Game:
     def __init__(self,screen):
@@ -19,6 +20,7 @@ class Game:
         chess_board.create_virtual_board()
         chess_board.generate_moves()
         clock = pygame.time.Clock()
+
         while self.is_running:
             self.screen.fill(VERDE)
             chess_board.draw_board()         
@@ -56,8 +58,12 @@ class Game:
                 chess_board.fin = time.time() - chess_board.inicio_tiempo
                 if chess_board.current_player_color == 'white':
                     chess_board.winner = chess_board.black_player
+                    chess_board.black_player.set_win()
+                    chess_board.white_player.set_lose()
                 else:
                     chess_board.winner = chess_board.white_player
+                    chess_board.white_player.set_win()
+                    chess_board.black_player.set_lose()
                 self.end_game_screen(chess_board.fin,chess_board)
             
             #Si hay una pieza seleccionada, entonces esta muestra las celdas a las que puede ir  
@@ -110,7 +116,7 @@ class Game:
 
         #Renderizar piezas blancas
         texto_lista_blancas = list(board.white_player.captured_pieces.items())
-        '''Se le da formato al texto que se imprimira'''
+        '''Se le da formato al texto que se imprimira: el primer elemento de la tupla es el nombre del tipo de pieza. El segundo es la cantidad'''
         texto_lista_blancas = ['Piece: ' + element[0][0].upper() + element[0][1:] + 's amount: ' + str(element[1]) for element in texto_lista_blancas]
         '''Se agrega el texto con su respectiva posicion'''
         diccionario_blancas = {texto:(300,125+(index*15)) for index,texto in enumerate(texto_lista_blancas)}
@@ -123,8 +129,10 @@ class Game:
         name_black = fuente.render('Black: ' + board.black_player.name,True,'white')
         name_white = fuente.render('White: ' + board.white_player.name,True,'white')
 
+        self.get_info_to_database(player_1=board.black_player,player_2=board.white_player,time=time)
+
         while True:
-            SCREEN.fill((0,0,0))
+            SCREEN.blit(BG_1,(0,0))
             MOUSE_POS = pygame.mouse.get_pos()
             SCREEN.blit(time_lasted,time_lasted_rect)
             SCREEN.blit(moves_done,moves_done_rect)
@@ -154,14 +162,74 @@ class Game:
             for texto,rect in diccionario_blancas.items():
                 surface = fuente.render(texto,True,'white')
                 SCREEN.blit(surface,rect)
-                
+
             board.black_player.reset_counter()
             board.white_player.reset_counter()
+            board.black_player.reset_win()
+            board.white_player.reset_win()
+            board.black_player.reset_lose()
+            board.white_player.reset_lose()
             pygame.display.update()
 
     def set_players(self,player_1,player_2):
         self.players = [Player('white',player_2),Player('black',player_1)]
         print(self.players)
+
+    def get_info_to_database(self,player_1,player_2,time):
+        import sqlite3
+
+        query = Query(primary_database)
+        query.query('''CREATE TABLE IF NOT EXISTS user_stats (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        user VARCHAR(255) UNIQUE,
+                        wins INTEGER,
+                        loses INTEGER,
+                        amount_captured INTEGER,
+                        time INTEGER,
+                        FOREIGN KEY(user) REFERENCES usuario(username)
+            )''')
+        
+        try:
+            get_user_if_exist_first = query.query(f'''
+                        SELECT COUNT(*) FROM user_stats WHERE user = '{player_1.name}'
+                        ''')
+            first_count = query.fetch_one()[0]
+            get_user_if_exist_second = query.query(f'''
+                        SELECT COUNT(*) FROM user_stats WHERE user = '{player_2.name}'
+
+                      ''')
+            second_count = query.fetch_one()[0]
+
+            #Comprobar para jugador 2
+            if second_count == 0:
+                query.query(f'''INSERT INTO user_stats (user,wins,loses,amount_captured,time) 
+                            VALUES ('{player_2.name}',{player_2.return_win()},{player_2.return_lose()},{player_2.total_captured()},{time})
+                            ''')
+            else:
+                query.query(f'''
+                        UPDATE user_stats SET wins = wins + {player_2.return_win()}, 
+                        loses = loses + {player_2.return_lose()}, 
+                        amount_captured = amount_captured + {player_2.total_captured()}, 
+                        time = time + {time} WHERE user = '{player_2.name}'
+                        ''')
+                
+            #Comprobar para jugador 1
+            if first_count == 0:
+                query.query(f'''INSERT INTO user_stats (user,wins,loses,amount_captured,time) 
+                            VALUES ('{player_1.name}',{player_1.return_win()},{player_1.return_lose()},{player_1.total_captured()},{time})
+                            ''')
+            else:
+                query.query(f'''
+                        UPDATE user_stats SET wins = wins + {player_1.return_win()}, 
+                        loses = loses + {player_1.return_lose()}, 
+                        amount_captured = amount_captured + {player_1.total_captured()}, 
+                        time = time + {time} WHERE user = '{player_1.name}'
+                        ''')                                
+        except sqlite3.Error as e:
+            print(e)
+        finally:
+            query.__del__()
+
 
 
 

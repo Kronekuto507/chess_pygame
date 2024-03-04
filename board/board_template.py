@@ -29,12 +29,12 @@ class Board:
         self.black_player = black_player
         self.checked_status = False
         self.current_player_color = 'white'
-        self.winner = None
 
         self.checkmate = False
         b_starter_row = 0
         
         self.sound_detect = 0
+        self.winner = None
 
         self.current_enemy_pieces = None
 

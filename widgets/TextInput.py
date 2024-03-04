@@ -14,7 +14,7 @@ class TextInput():
 
         self.color_selected = pygame.Color('lightskyblue3')
         self.color_unselected = pygame.Color('gray15')
-        self.color = self.color_selected
+        self.color = self.color_unselected
         self.is_selected = False
         self.screen = screen
         self.text = ''
