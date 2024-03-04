@@ -3,14 +3,13 @@ import sys
 
 class TextInput():
     base_font = pygame.font.SysFont("Arial",32)
-    max_text_size = 360
-    def __init__(self,pos_x,pos_y,screen,text_input_id, hide_text = False):
+    def __init__(self,pos_x,pos_y,screen,text_input_id, width,hide_text = False):
 
         self.screen = screen
         self.pos_x = pos_x
         self.pos_y = pos_y
         self.text_input_id = text_input_id
-
+        self.width = width
         self.input_rect = pygame.Rect(self.pos_x,self.pos_y,160,40)
 
         self.color_selected = pygame.Color('lightskyblue3')
@@ -39,7 +38,7 @@ class TextInput():
         #Mostrar en pantalla cuando se agrega al text input
         text_surface = TextInput.base_font.render(showable_text,True,(255,255,255))
         self.screen.blit(text_surface,(self.input_rect.x + 5, self.input_rect.y + 5))
-        self.input_rect.w = max(TextInput.max_text_size,text_surface.get_width() + 10)
+        self.input_rect.w = max(self.width,text_surface.get_width() + 10)
 
     def delete_char(self):
         self.text = self.text[:-1]
@@ -60,6 +59,9 @@ class TextInput():
     
     def return_id(self):
         return self.text_input_id
+    
+    def restart_text(self):
+        self.text = ''
 
 
         
