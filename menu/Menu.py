@@ -4,7 +4,7 @@ from pygame.locals import *
 from widgets.Button import Button
 from board.constants import *
 from menu.menu_functions import *
-from functools import partial
+
 
 
 PLACE = 100
